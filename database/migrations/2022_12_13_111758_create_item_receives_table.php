@@ -21,11 +21,11 @@ class CreateItemReceivesTable extends Migration
             $table->string('invoice_no',50)->nullable();
             $table->string('invoice_photo',255)->nullable();
             $table->tinyInteger('payment_status',false,1)->default(\App\Models\ItemReceive::UNPAID
-            )->comment('1=Paid,2=Unpaid,3=Partial Paid');
+            )->comment('1=Paid,2=Unpaid,3=Due');
             $table->float('payable_amount',8,1)->default(0);
             $table->float('paid_amount',8,1)->default(0);
             $table->float('due_amount',8,1)->default(0);
-            $table->string('comments',150)->nullable();
+            $table->string('comments',200)->nullable();
 
             $table->unsignedBigInteger('created_by', false);
             $table->unsignedBigInteger('updated_by', false)->nullable();

@@ -16,4 +16,22 @@ class ItemReceive extends Model
     protected $table='item_receives';
     protected $fillable=['item_order_id','vendor_id','qty','invoice_no','invoice_photo','payment_status','payable_amount','paid_amount',
         'due_amount','comments','created_by','updated_by'];
+
+    public function itemReceiveDetails(){
+        return $this->hasMany(ItemReceiveDetail::class,'item_receive_id','id');
+    }
+
+    public static function boot(){
+        parent::boot();
+        static::creating(function($query){
+            if(\Auth::check()){
+                $query->created_by = @\Auth::user()->id;
+            }
+        });
+        static::updating(function($query){
+            if(\Auth::check()){
+                $query->updated_by = @\Auth::user()->id;
+            }
+        });
+    }
 }

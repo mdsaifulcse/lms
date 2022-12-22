@@ -16,5 +16,27 @@ class Item extends Model
     const NO=0;
     protected $table='items';
     protected $fillable=['title','isbn','edition','number_of_page','summary','video_url','brochure','publisher_id',
-        'language_id','country_id','category_id','subcategory_id','third_category_id','status','created_by','updated_by'];
+        'language_id','country_id','category_id','subcategory_id','third_category_id','sequence','status','created_by','updated_by'];
+
+
+    public function itemAuthors(){
+        return $this->hasMany(ItemAuthor::class,'item_id','id');
+    }
+    public function itemThumbnails(){
+        return $this->hasMany(ItemThumbnail::class,'item_id','id');
+    }
+
+    public static function boot(){
+        parent::boot();
+        static::creating(function($query){
+            if(\Auth::check()){
+                $query->created_by = @\Auth::user()->id;
+            }
+        });
+        static::updating(function($query){
+            if(\Auth::check()){
+                $query->updated_by = @\Auth::user()->id;
+            }
+        });
+    }
 }

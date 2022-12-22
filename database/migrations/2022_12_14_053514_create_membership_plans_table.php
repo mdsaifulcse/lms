@@ -17,7 +17,9 @@ class CreateMembershipPlansTable extends Migration
             $table->id();
 
             $table->string('name');
-            $table->integer('valid_duration',false,4)->default(0)->comment('0=No duration,1=I Mean Forever');
+            $table->string('image');
+            $table->integer('valid_duration',false,4)->default(0)
+                ->comment('Month wise duration, 0=No duration (I Mean Forever)');
             $table->integer('fee_amount',false,4)->default(0);
             $table->text('description')->nullable();
             $table->text('term_policy')->nullable();

@@ -49,6 +49,15 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','prefix' => 'admi
 */
 Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => ['auth:sanctum'],'prefix' => 'admin','as' => 'admin.'],function (){
 
+    /*--------- Item Order--------*/
+    Route::apiResource('/item-received', 'ItemReceiveController');
+    /*--------- Item Order--------*/
+    Route::apiResource('/item-orders', 'ItemOrderController');
+
+    /*--------- Item --------*/
+    Route::apiResource('/items', 'ItemController');
+    Route::get('/item-max-sequence', 'ItemController@getMaxSequence');
+
     /* -------- Item Prerequisite  ------- */
     Route::apiResource('/vendors', 'VendorController');
     Route::get('/vendor-max-sequence', 'VendorController@getMaxSequence');
@@ -73,6 +82,11 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
 
     Route::apiResource('/publishers', 'PublisherController');
     Route::get('/publisher-max-sequence', 'PublisherController@getMaxSequence');
+
+    Route::apiResource('/user-membership', 'UserMembershipController');
+
+    Route::apiResource('/membership-plans', 'MembershipController');
+    Route::get('/membership-plans-max-sequence', 'MembershipController@getMaxSequence');
 
     Route::get('/users/{roleType?}', 'UserController@allUserList');//client=General type User, admin='Admin type user(admin,superamin....)'
     Route::get('/user-by-id/{useId}', 'UserController@userInfoById');

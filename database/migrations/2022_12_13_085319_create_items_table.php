@@ -15,10 +15,10 @@ class CreateItemsTable extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->string('title',150);
+            $table->string('title',2500);
             $table->string('isbn',100)->nullable();
-            $table->string('edition')->nullable();
-            $table->string('number_of_page')->nullable();
+            $table->string('edition',100)->nullable();
+            $table->string('number_of_page',50)->nullable();
             $table->text('summary')->nullable();
             $table->string('video_url')->nullable( );
             $table->string('brochure')->nullable( )->comment('Pdf file');

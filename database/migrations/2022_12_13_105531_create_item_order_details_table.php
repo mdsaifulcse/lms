@@ -17,7 +17,7 @@ class CreateItemOrderDetailsTable extends Migration
             $table->id();
             $table->foreignId('item_order_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('item_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->tinyInteger('item_qty',false,3)->default(0);
+            $table->tinyInteger('item_qty',false,4)->default(0);
             $table->integer('item_price',false,6)->default(0);
             $table->softDeletes();
             $table->timestamps();

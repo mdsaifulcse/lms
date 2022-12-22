@@ -15,5 +15,20 @@ class MembershipPlan extends Model
     const YES=1;
     const NO=0;
     protected $table='membership_plans';
-    protected $fillable=['name','valid_duration','fee_amount','description','term_policy','sequence','status','created_by','updated_by'];
+    protected $fillable=['name','image','valid_duration','fee_amount','description','term_policy','sequence','status','created_by','updated_by'];
+
+    public static function boot(){
+        parent::boot();
+        static::creating(function($query){
+            if(\Auth::check()){
+                $query->created_by = @\Auth::user()->id;
+            }
+        });
+        static::updating(function($query){
+            if(\Auth::check()){
+                $query->updated_by = @\Auth::user()->id;
+            }
+        });
+    }
+
 }

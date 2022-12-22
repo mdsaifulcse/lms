@@ -247,9 +247,9 @@ class MyHelperProvider extends ServiceProvider
 
          //$fileType = $photoData->getClientOriginalName();
          $fileName =substr($photoOrgName,0,-4).date('d-m-Y-i-s').'.'.$photoType;
-         $bigPhotoPath = 'images/products/big'.date('/Y/m/d/');
-         $mediumPhotoPath = 'images/products/medium'.date('/Y/m/d/');
-         $smallPhotoPath = 'images/products/small'.date('/Y/m/d/');
+         $bigPhotoPath = 'images/items/big'.date('/Y/m/d/');
+         $mediumPhotoPath = 'images/items/medium'.date('/Y/m/d/');
+         $smallPhotoPath = 'images/items/small'.date('/Y/m/d/');
          //return $path2;
 
          if (!is_dir(public_path($bigPhotoPath))) {
