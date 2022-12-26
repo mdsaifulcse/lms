@@ -28,9 +28,8 @@ class UserMembershipController extends Controller
     public function index()
     {
         try{
-
-            $items=$this->model->get();
-            return $this->respondWithSuccess('All User Membership Plan list',UserMembershipPlanResourceCollection::make($items),Response::HTTP_OK);
+            $userMemberships=$this->model->with('user')->get();
+            return $this->respondWithSuccess('All User Membership Plan list',UserMembershipPlanResourceCollection::make($userMemberships),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -64,16 +63,18 @@ class UserMembershipController extends Controller
 
         try{
 
-            $userWiseActivePlan=$this->model->where(['user_id'=>$request->user_id])->first();
-
-            if (!empty($userWiseActivePlan)){
-
+            // Find user Active plan and make it Inactive if request status is Active---------
+            if ($request->status==UserMembership::ACTIVE) {
+                $userWiseActivePlan = $this->model->where(['user_id' => $request->user_id, 'status' => UserMembership::ACTIVE])->first();
+                if (!empty($userWiseActivePlan)) {
+                    $userWiseActivePlan->update(['status' => UserMembership::INACTIVE]);
+                }
             }
 
             $userMembershipPlan=$this->model->create([
                 'user_id'=>$request->user_id,
                 'membership_plan_id'=>$request->membership_plan_id,
-                'status'=>''
+                'status'=>$request->status
             ]);
 
             return $this->respondWithSuccess('Item has been created successful',new  UserMembershipPlanResource($userMembershipPlan),Response::HTTP_OK);
@@ -87,6 +88,7 @@ class UserMembershipController extends Controller
         return [
             'user_id' => 'required|exists:users,id',
             'membership_plan_id'  => "required|exists:membership_plans,id",
+            'status'=>'required|in:0,1'
         ];
     }
 
@@ -99,9 +101,9 @@ class UserMembershipController extends Controller
     public function show($id)
     {
         try{
-            $item=$this->model->with('itemAuthors','itemThumbnails')->where('id',$id)->first();
-            if ($item){
-                return $this->respondWithSuccess('Item Info',new  UserMembershipPlanResource($item),Response::HTTP_OK);
+            $userMembership=$this->model->with('user')->where(['id'=>$id])->first();
+            if ($userMembership){
+                return $this->respondWithSuccess('Item Info',new  UserMembershipPlanResource($userMembership),Response::HTTP_OK);
             }else{
                 return $this->respondWithError('No data found',[],Response::HTTP_NOT_FOUND);
             }
@@ -130,7 +132,48 @@ class UserMembershipController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $rules=$this->updateValidationRules($request);
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return $this->respondWithValidation('Validation Fail',$validator->errors()->first(),Response::HTTP_BAD_REQUEST);
+        }
+
+        try{
+
+            // Find the user membership plan --------------------
+            $userMembershipPlan=$this->model->with('user')->where(['id'=>$id])->first();
+            if (empty($userMembershipPlan)){
+                return $this->respondWithError('No data found',[],Response::HTTP_NOT_FOUND);
+            }
+
+            // Find user Active plan and make it Inactive if request status is Active---------
+            if ($request->status==UserMembership::ACTIVE) {
+                $userWiseActivePlan = $this->model->where(['user_id' => $request->user_id, 'status' => UserMembership::ACTIVE])->first();
+                if (!empty($userWiseActivePlan)) {
+                    $userWiseActivePlan->update(['status' => UserMembership::INACTIVE]);
+                }
+            }
+
+            // Update user membership Plan
+            $userMembershipPlan->update([
+                'user_id'=>$request->user_id,
+                'membership_plan_id'=>$request->membership_plan_id,
+                'status'=>$request->status,
+            ]);
+
+            return $this->respondWithSuccess('Item has been created successful',new  UserMembershipPlanResource($userMembershipPlan),Response::HTTP_OK);
+
+        }catch(\Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function updateValidationRules($request){
+        return [
+            'user_id' => 'required|exists:users,id',
+            'membership_plan_id'  => "required|exists:membership_plans,id",
+            'status'  => "required|in:0,1",
+        ];
     }
 
     /**
@@ -141,6 +184,17 @@ class UserMembershipController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $userMembership=$this->model->with('user')->where(['id'=>$id])->first();
+            if (!$userMembership){
+                return $this->respondWithError('No data found',[],Response::HTTP_NOT_FOUND);
+            }
+            $userMembership->delete();
+
+            return $this->respondWithSuccess('User plan has been Deleted',[],Response::HTTP_OK);
+
+        }catch(\Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

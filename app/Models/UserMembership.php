@@ -17,6 +17,14 @@ class UserMembership extends Model
     protected $table='user_memberships';
     protected $fillable=['user_id','membership_plan_id','status','created_by','updated_by'];
 
+
+    public function user(){
+        return $this->belongsTo(User::class,'user_id','id');
+    }
+    public function membershipPlan(){
+        return $this->belongsTo(MembershipPlan::class,'membership_plan_id','id');
+    }
+
     public static function boot(){
         parent::boot();
         static::creating(function($query){

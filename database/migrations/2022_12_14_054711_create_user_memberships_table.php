@@ -18,7 +18,7 @@ class CreateUserMembershipsTable extends Migration
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('membership_plan_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
 
-            $table->tinyInteger('status')->default(\App\Models\UserMembership::ACTIVE)->comment('1=Active,0=Inactive , User wise At a time one status would be active');
+            $table->tinyInteger('status')->comment('1=Active,0=Inactive , User wise At a time one status would be active');
 
             $table->unsignedBigInteger('created_by', false);
             $table->unsignedBigInteger('updated_by', false)->nullable();

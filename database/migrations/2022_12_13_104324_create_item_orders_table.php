@@ -15,7 +15,7 @@ class CreateItemOrdersTable extends Migration
     {
         Schema::create('item_orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_no',20);
+            $table->string('order_no',30);
             $table->tinyInteger('qty',false,4)->default(0);
             $table->float('amount')->default(0);
             $table->timestamp('tentative_date')->comment('Tentative delivery date');

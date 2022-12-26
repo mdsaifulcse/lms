@@ -10,6 +10,22 @@ class VendorPayment extends Model
 {
     use HasFactory,SoftDeletes;
 
+    const PAYMENTNOLENGTH=6;
+
     protected $table='vendor_payments';
-    protected $fillable=['item_receive_id','paid_amount','due_amount','comments','created_by','updated_by'];
+    protected $fillable=['vendor_payment_no','item_receive_id','vendor_id','paid_amount','total_last_due_amount','comments','created_by','updated_by'];
+
+    public static function boot(){
+        parent::boot();
+        static::creating(function($query){
+            if(\Auth::check()){
+                $query->created_by = @\Auth::user()->id;
+            }
+        });
+        static::updating(function($query){
+            if(\Auth::check()){
+                $query->updated_by = @\Auth::user()->id;
+            }
+        });
+    }
 }

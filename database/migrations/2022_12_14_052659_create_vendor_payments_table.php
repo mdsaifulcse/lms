@@ -15,7 +15,9 @@ class CreateVendorPaymentsTable extends Migration
     {
         Schema::create('vendor_payments', function (Blueprint $table) {
             $table->id();
+            $table->string('vendor_payment_no',30);
             $table->foreignId('item_receive_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('vendor_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->float('paid_amount',false,8,1)->default(0);
             $table->float('due_amount',false,8,1)->default(0);
             $table->string('comments',150)->nullable();
@@ -38,6 +40,7 @@ class CreateVendorPaymentsTable extends Migration
     {
         Schema::table('vendor_payments',function (Blueprint $table){
             $table->dropForeign(['item_receive_id']);
+            $table->dropForeign(['vendor_id']);
             $table->dropForeign(['created_by']);
             $table->dropForeign(['updated_by']);
         });

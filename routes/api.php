@@ -49,7 +49,10 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','prefix' => 'admi
 */
 Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => ['auth:sanctum'],'prefix' => 'admin','as' => 'admin.'],function (){
 
-    /*--------- Item Order--------*/
+    /*--------- Vendor Payment--------*/
+    Route::apiResource('/vendor-payments', 'VendorPaymentController');
+
+    /*--------- Item receive--------*/
     Route::apiResource('/item-received', 'ItemReceiveController');
     /*--------- Item Order--------*/
     Route::apiResource('/item-orders', 'ItemOrderController');

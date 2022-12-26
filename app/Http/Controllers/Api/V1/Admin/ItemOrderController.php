@@ -70,7 +70,7 @@ class ItemOrderController extends Controller
 
     public function storeValidationRules($request){
         return [
-            'order_no' => 'required|unique:item_orders,order_no,NULL,id,deleted_at,NULL',
+            'order_no' => 'unique:item_orders,order_no,NULL,id,deleted_at,NULL',
             'qty'  => "required|numeric|digits_between:1,4",
             'amount'  => "required|numeric|digits_between:1,999999",
             'tentative_date'  => "nullable",

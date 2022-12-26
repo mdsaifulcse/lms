@@ -16,8 +16,8 @@ class CreateVendorsTable extends Migration
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email');
-            $table->string('mobile');
+            $table->string('email')->nullable();
+            $table->string('mobile')->nullable();
             $table->string('photo')->nullable();
             $table->float('total_due',13,2)->default(0);
             $table->float('balance',13,2)->default(0)->comment('All Payment (Advance, initial, and regular payment');

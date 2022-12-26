@@ -15,10 +15,11 @@ class CreateItemReceivesTable extends Migration
     {
         Schema::create('item_receives', function (Blueprint $table) {
             $table->id();
+            $table->string('receive_no',30);
             $table->foreignId('item_order_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('vendor_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->integer('qty',false,5);
-            $table->string('invoice_no',50)->nullable();
+            $table->string('invoice_no',50)->nullable()->comment('Invoice is provided by Vendor');
             $table->string('invoice_photo',255)->nullable();
             $table->tinyInteger('payment_status',false,1)->default(\App\Models\ItemReceive::UNPAID
             )->comment('1=Paid,2=Unpaid,3=Due');

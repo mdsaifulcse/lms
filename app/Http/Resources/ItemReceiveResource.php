@@ -17,6 +17,7 @@ class ItemReceiveResource extends JsonResource
     {
         return [
             'id'=>$this->id,
+            'receive_no'=>$this->receive_no,
             'item_order_id'=>$this->item_order_id,
             'vendor_id'=>$this->vendor_id,
             'qty'=>$this->qty,

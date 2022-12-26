@@ -12,6 +12,7 @@ use App\Models\ItemOrder;
 use App\Models\ItemOrderDetail;
 use App\Models\ItemReceive;
 use App\Models\ItemReceiveDetail;
+use App\Models\VendorPayment;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use DB,Hash,Validator,Auth;
@@ -49,6 +50,8 @@ class ItemReceiveController extends Controller
      */
     public function store(Request $request)
     {
+        $receiveNo=$this->generateItemReceiveNo();
+        $request['receive_no']=$receiveNo;
         $rules=$this->storeValidationRules($request);
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -65,13 +68,16 @@ class ItemReceiveController extends Controller
             }
             $itemReceive=$this->model->create($input);
 
-            // Store Item Order Details -----------
+            // Store Item Order Details and calculate payment status, payable amount-----------
             if (count($request->item_id)>0){
                 $this->storeItemReceiveDetails($request,$itemReceive->id);
             }
 
             $this->updateInventoryStock($request,$itemReceive->id);
 
+
+            // To get update data --------------------------------
+            $itemReceive=$this->model->find($itemReceive->id);
             DB::commit();
             return $this->respondWithSuccess('Item Receive Info has been created successful',new  ItemReceiveResource($itemReceive),Response::HTTP_OK);
 
@@ -84,8 +90,9 @@ class ItemReceiveController extends Controller
 
     public function storeValidationRules($request){
         return [
+            'receive_no' => 'unique:item_receives,receive_no,NULL,id,deleted_at,NULL',
             'item_order_id'  => "required|exists:item_orders,id",
-            'vendor_id'  => "nullable|exists:vendors,id",
+            'vendor_id'  => "required|exists:vendors,id",
             'qty'  => "required|numeric|digits_between:1,4",
             'paid_amount'  => "numeric|digits_between:1,6",
             'comments'  => "nullable|max:200",
@@ -133,8 +140,18 @@ class ItemReceiveController extends Controller
         $itemReceive=ItemReceive::find($itemReceiveId);
         $itemReceive->update(['qty'=>$qty,
             'payable_amount'=>$amount,
+            'due_amount'=>$dueAmount,
             'payment_status'=>$paymentStatus,
         ]);
+
+        //----- Vendor payment -------------------------
+        VendorPayment::create([
+            'vendor_id'=>$request->vendor_id,
+            'item_receive_id'=>$itemReceiveId,
+            'paid_amount'=>$request->paid_amount,
+            'total_last_due_amount'=>$dueAmount,
+        ]);
+
     }
 
     public function updateInventoryStock($request,$itemReceiveId){
@@ -155,6 +172,17 @@ class ItemReceiveController extends Controller
             $request->item_qty[$key]?$request->item_qty[$key]:0;
 
         }
+    }
+    public function generateItemReceiveNo(){
+
+        $lastReceiveNo=ItemReceive::max('receive_no');
+
+        $lastReceiveNo=$lastReceiveNo?$lastReceiveNo+1:1;
+
+
+        $receiveNoLength= ItemReceive::RECEIVENOLENGTH;
+
+        return str_pad($lastReceiveNo,$receiveNoLength,"0",false);
     }
 
     /**

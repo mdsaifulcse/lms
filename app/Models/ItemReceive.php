@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ItemReceive extends Model
 {
     use HasFactory,SoftDeletes;
+    const RECEIVENOLENGTH=6;
     const PAID=1;
     const UNPAID=2;
     const DUE=3;
 
     protected $table='item_receives';
-    protected $fillable=['item_order_id','vendor_id','qty','invoice_no','invoice_photo','payment_status','payable_amount','paid_amount',
+    protected $fillable=['receive_no','item_order_id','vendor_id','qty','invoice_no','invoice_photo','payment_status','payable_amount','paid_amount',
         'due_amount','comments','created_by','updated_by'];
 
     public function itemReceiveDetails(){
