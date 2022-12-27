@@ -28,7 +28,7 @@ class VendorPaymentController extends Controller
     public function index()
     {
         try{
-            $vendorPayments=$this->model->with('user')->get();
+            $vendorPayments=$this->model->with('vendor')->get();
             return $this->respondWithSuccess('Vendor payment list',VendorPaymentResourceCollection::make($vendorPayments),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -53,8 +53,8 @@ class VendorPaymentController extends Controller
      */
     public function store(Request $request)
     {
-        $paymentNumber=$this->generateItemReceiveNo();
-        $request['']=$paymentNumber;
+        $paymentNumber=$this->generateVendorPaymentNo();
+        $request['vendor_payment_no']=$paymentNumber;
         $rules=$this->storeValidationRules($request);
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -70,10 +70,13 @@ class VendorPaymentController extends Controller
             $totalPaidAmount=$itemReceiveData->paid_amount+$request->paid_amount;
             $totalLastDueAmount=$itemReceiveData->payable_amount-$totalPaidAmount;
 
+
             $paymentStatus=$itemReceiveData->payment_status;
-            if ($totalPaidAmount>$totalLastDueAmount){
+            if ($totalLastDueAmount>0){
+
                 $paymentStatus=ItemReceive::DUE;
             }else{
+
                 $paymentStatus=ItemReceive::PAID;
             }
 
@@ -84,21 +87,32 @@ class VendorPaymentController extends Controller
                 'payment_status'=>$paymentStatus
             ]);
 
+            // Vendor Payment ----------------------------------------
+            $vendorPayment=$this->model->create([
+                'vendor_payment_no'=>$request->vendor_payment_no,
+                'item_receive_id'=>$request->item_receive_id,
+                'vendor_id'=>$request->vendor_id,
+                'paid_amount'=>$request->paid_amount,
+                'total_last_due_amount'=>$totalLastDueAmount,
+                'comments'=>$request->comments,
+            ]);
 
-            $vendorPayment=$this->model->where(['item_receive_id'=>$request->item_receive_id])->first();
-
-            if (empty($vendorPayment)){ // Update vendor Payment ----
-                $vendorPayment=$this->model->create([
-                    'item_receive_id'=>$request->item_receive_id,
-                    'vendor_id'=>$request->vendor_id,
-                    'paid_amount'=>$request->paid_amount,
-                    'total_last_due_amount'=>$totalLastDueAmount,
-                ]);
-            }else{ // Create Vendor Payment -----
-                $vendorPayment->update([
-                    'paid_amount'=>$request->paid_amount,
-                    'total_last_due_amount'=>$totalLastDueAmount,]);
-            }
+//            $vendorPayment=$this->model->where(['item_receive_id'=>$request->item_receive_id])->first();
+//
+//            if (empty($vendorPayment)){ // Update vendor Payment ----
+//                $vendorPayment=$this->model->create([
+//                    'vendor_payment_no'=>$request->vendor_payment_no,
+//                    'item_receive_id'=>$request->item_receive_id,
+//                    'vendor_id'=>$request->vendor_id,
+//                    'paid_amount'=>$request->paid_amount,
+//                    'total_last_due_amount'=>$totalLastDueAmount,
+//                ]);
+//            }
+//            else{ // Create Vendor Payment -----
+//                $vendorPayment->update([
+//                    'paid_amount'=>$request->paid_amount,
+//                    'total_last_due_amount'=>$totalLastDueAmount,]);
+//            }
 
 
             // To get update data --------------------------------
@@ -116,12 +130,13 @@ class VendorPaymentController extends Controller
         return [
             'vendor_payment_no' => 'unique:vendor_payments,vendor_payment_no,NULL,id,deleted_at,NULL',
             'item_receive_id'  => "required|exists:item_receives,id",
-            'vendor_id'  => "nullable|exists:vendors,id",
+            'vendor_id'  => "required|exists:vendors,id",
             'paid_amount'=>"required|numeric|digits_between:1,9",
+            'comments'=>"nullable|max:145",
         ];
     }
 
-    public function generateItemReceiveNo(){
+    public function generateVendorPaymentNo(){
 
         $lastPaymentNo=VendorPayment::max('vendor_payment_no');
         $lastPaymentNo=$lastPaymentNo?$lastPaymentNo+1:1;
@@ -140,7 +155,7 @@ class VendorPaymentController extends Controller
     public function show($id)
     {
         try{
-            $vendorPayment=$this->model->with('user')->where(['id'=>$id])->first();
+            $vendorPayment=$this->model->with('vendor')->where(['id'=>$id])->first();
             if ($vendorPayment){
                 return $this->respondWithSuccess('Vendor payment Info',new  VendorPaymentResource($vendorPayment),Response::HTTP_OK);
             }else{
@@ -183,13 +198,37 @@ class VendorPaymentController extends Controller
     public function destroy($id)
     {
         try{
-            $userMembership=$this->model->with('user')->where(['id'=>$id])->first();
-            if (!$userMembership){
+            $vendorPayment=$this->model->with('itemReceive')->where(['id'=>$id])->first();
+            if (!$vendorPayment){
                 return $this->respondWithError('No data found',[],Response::HTTP_NOT_FOUND);
             }
-            $userMembership->delete();
 
-            return $this->respondWithSuccess('User plan has been Deleted',[],Response::HTTP_OK);
+            // ------- minus(-) paid_amount from Paid Amount, add(+) to due_amount and change payment_status on Item Receive table
+
+            $itemReceive=$vendorPayment->itemReceive;
+
+            // Paid After minus(-) paid amount -------
+            $totalPaidAmount=$itemReceive->paid_amount-$vendorPayment->paid_amount;
+            // Due amount After add(+) paid amount ----
+            $totalDueAmount=$itemReceive->due_amount+$vendorPayment->paid_amount;
+
+            // calculate payment status
+            $paymentStatus=$itemReceive->payment_status;
+            if ($totalDueAmount==0){
+                $paymentStatus=ItemReceive::PAID;
+            }else{
+                $paymentStatus=ItemReceive::DUE;
+            }
+
+            $itemReceive->update([
+                'paid_amount'=>$totalPaidAmount,
+                'due_amount'=>$totalDueAmount,
+                'payment_status'=>$paymentStatus
+            ]);
+
+            $vendorPayment->delete();
+
+            return $this->respondWithSuccess('Vendor Payment has been Deleted',[],Response::HTTP_OK);
 
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);

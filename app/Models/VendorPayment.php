@@ -15,6 +15,14 @@ class VendorPayment extends Model
     protected $table='vendor_payments';
     protected $fillable=['vendor_payment_no','item_receive_id','vendor_id','paid_amount','total_last_due_amount','comments','created_by','updated_by'];
 
+    public function vendor(){
+        return $this->belongsTo(Vendor::class,'vendor_id','id');
+    }
+
+    public function itemReceive(){
+        return $this->belongsTo(ItemReceive::class,'item_receive_id','id');
+    }
+
     public static function boot(){
         parent::boot();
         static::creating(function($query){

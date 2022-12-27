@@ -49,6 +49,12 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','prefix' => 'admi
 */
 Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => ['auth:sanctum'],'prefix' => 'admin','as' => 'admin.'],function (){
 
+    /*--------- Item Return --------*/
+    Route::apiResource('/item-returns', 'ItemReturnController');
+
+    /*--------- Item Rental --------*/
+    Route::apiResource('/item-rentals', 'ItemRentalController');
+
     /*--------- Vendor Payment--------*/
     Route::apiResource('/vendor-payments', 'VendorPaymentController');
 

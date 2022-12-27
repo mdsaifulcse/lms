@@ -11,7 +11,7 @@ class ItemRentalDetail extends Model
     use HasFactory,SoftDeletes;
 
     const RENTAL=0;
-    const RETURN=1;
+    const RETURNBACK=1;
     const OVERDUE=2;
 
     const NOAMOUNT=0;

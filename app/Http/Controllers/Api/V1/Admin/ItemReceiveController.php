@@ -110,7 +110,7 @@ class ItemReceiveController extends Controller
 
     public function storeItemReceiveDetails($request,$itemReceiveId){
         $qty=0;
-        $amount=0;
+        $totalAmount=0;
         foreach ($request->item_id as $key=>$itemId){
             $itemReceiveDetail[]=[
                 'item_receive_id'=>$itemReceiveId,
@@ -123,29 +123,31 @@ class ItemReceiveController extends Controller
             $itemOrderDetail=ItemOrderDetail::where(['item_order_id'=>$request->item_order_id,'item_id'=>$request->item_id[$key]])
                 ->first();
 
-            $amount+=$itemOrderDetail->item_price?$itemOrderDetail->item_price:0;
+            $totalAmount+=$itemOrderDetail->item_price?$itemOrderDetail->item_price:0;
         }
         ItemReceiveDetail::insert($itemReceiveDetail);
 
         // --------- Calculate Payment Status ---------
-        $dueAmount=$amount-$request->paid_amount;
+        $dueAmount=$totalAmount-$request->paid_amount;
         $paymentStatus=ItemReceive::UNPAID;
+
         if ($dueAmount==0){
             $paymentStatus=ItemReceive::PAID;
-        }elseif ($request->paid_amount>0){
+        }elseif ($request->paid_amount>$totalAmount){
             $paymentStatus=ItemReceive::DUE;
         }
 
         // --------- update ItemReceive ---------------
         $itemReceive=ItemReceive::find($itemReceiveId);
         $itemReceive->update(['qty'=>$qty,
-            'payable_amount'=>$amount,
+            'payable_amount'=>$totalAmount,
             'due_amount'=>$dueAmount,
             'payment_status'=>$paymentStatus,
         ]);
 
         //----- Vendor payment -------------------------
         VendorPayment::create([
+            'vendor_payment_no'=>$this->generateVendorPaymentNo(),
             'vendor_id'=>$request->vendor_id,
             'item_receive_id'=>$itemReceiveId,
             'paid_amount'=>$request->paid_amount,
@@ -183,6 +185,15 @@ class ItemReceiveController extends Controller
         $receiveNoLength= ItemReceive::RECEIVENOLENGTH;
 
         return str_pad($lastReceiveNo,$receiveNoLength,"0",false);
+    }
+    public function generateVendorPaymentNo(){
+
+        $lastPaymentNo=VendorPayment::max('vendor_payment_no');
+        $lastPaymentNo=$lastPaymentNo?$lastPaymentNo+1:1;
+
+        $paymentNoLength= VendorPayment::PAYMENTNOLENGTH;
+
+        return str_pad($lastPaymentNo,$paymentNoLength,"0",false);
     }
 
     /**

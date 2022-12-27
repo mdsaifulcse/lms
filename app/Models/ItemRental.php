@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ItemRental extends Model
 {
     use HasFactory,SoftDeletes;
+    const RENTALNOLENGTH=6;
     const RENTAL=0;
-    const RETURN=1;
+    const RETURNBACK=1;
     const OVERDUE=2;
 
     const NOAMOUNT=0;
@@ -19,4 +20,22 @@ class ItemRental extends Model
     protected $table='item_rentals';
     protected $fillable=['rental_no','rental_date','return_date','qty','user_id','amount_of_penalty',
         'penalty_status','status','created_by','updated_by'];
+
+    public function itemRentalDetails(){
+        return $this->hasMany(ItemRentalDetail::class,'item_rental_id','id');
+    }
+
+    public static function boot(){
+        parent::boot();
+        static::creating(function($query){
+            if(\Auth::check()){
+                $query->created_by = @\Auth::user()->id;
+            }
+        });
+        static::updating(function($query){
+            if(\Auth::check()){
+                $query->updated_by = @\Auth::user()->id;
+            }
+        });
+    }
 }

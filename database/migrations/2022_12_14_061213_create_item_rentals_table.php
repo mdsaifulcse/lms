@@ -15,7 +15,7 @@ class CreateItemRentalsTable extends Migration
     {
         Schema::create('item_rentals', function (Blueprint $table) {
             $table->id();
-            $table->string('rental_no');
+            $table->string('rental_no',30);
             $table->timestamp('rental_date');
             $table->timestamp('return_date')->nullable();
             $table->tinyInteger('qty')->default(0);
