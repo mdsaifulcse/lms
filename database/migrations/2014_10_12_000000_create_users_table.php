@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name',80);
-            $table->string('email',100);
-            $table->string('phone',25);
+            $table->string('email',100)->nullable();
+            $table->string('phone',25)->nullable();
             $table->tinyInteger('user_role',false,2)->default(\App\Models\User::GENERALUSER)->comment('1=Developer,2=Super Admin,3=Admin,4=Librarian,5=General User');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

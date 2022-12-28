@@ -12,10 +12,10 @@ class ItemReturn extends Model
     const RETURNNOLENGTH=6;
 
     protected $table='item_returns';
-    protected $fillable=['return_no','item_return_id','qty','return_date','comments','created_by','updated_by'];
+    protected $fillable=['return_no','item_rental_id','qty','return_date','comments','created_by','updated_by'];
 
-    public function itemRentalDetails(){
-        return $this->hasMany(ItemReturn::class,'item_rental_id','id');
+    public function itemReturnDetails(){
+        return $this->hasMany(ItemReturnDetail::class,'item_return_id','id');
     }
 
     public static function boot(){

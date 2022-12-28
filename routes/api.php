@@ -83,6 +83,8 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
     Route::apiResource('/authors', 'AuthorController');
     Route::get('/author-max-sequence', 'AuthorController@getMaxSequence');
 
+    Route::post('/login-user', 'AuthorController@loginCustom');
+
     Route::apiResource('/countries', 'CountryController');
     Route::get('/country-max-sequence', 'CountryController@getMaxSequence');
 

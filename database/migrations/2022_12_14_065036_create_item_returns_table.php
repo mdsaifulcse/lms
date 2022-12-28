@@ -16,7 +16,7 @@ class CreateItemReturnsTable extends Migration
         Schema::create('item_returns', function (Blueprint $table) {
             $table->id();
             $table->string('return_no',30);
-            $table->foreignId('item_return_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('item_rental_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->tinyInteger('qty',false,3)->default(0);
             $table->timestamp('return_date')->nullable();
             $table->string('comments',150)->nullable();
@@ -37,7 +37,7 @@ class CreateItemReturnsTable extends Migration
     public function down()
     {
         Schema::table('item_returns',function (Blueprint $table){
-            $table->dropForeign(['item_return_id']);
+            $table->dropForeign(['item_rental_id']);
             $table->dropForeign(['created_by']);
             $table->dropForeign(['updated_by']);
         });

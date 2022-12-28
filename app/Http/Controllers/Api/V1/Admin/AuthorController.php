@@ -8,8 +8,10 @@ use App\Http\Resources\AuthorResourceCollection;
 use App\Http\Traits\ApiResponseTrait;
 use App\Models\Author;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
-use DB,Hash,Validator,Auth;
+use DB,Hash,Validator;
+use Illuminate\Support\Facades\Auth;
 
 class AuthorController extends Controller
 {
@@ -53,8 +55,10 @@ class AuthorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(Request $request)
     {
+
         $rules=$this->storeValidationRules($request);
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {

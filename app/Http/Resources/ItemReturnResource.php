@@ -20,6 +20,7 @@ class ItemReturnResource extends JsonResource
             'qty'=>$this->qty,
             'return_date'=>$this->return_date,
             'comments'=>$this->comments,
+            'itemReturnDetails'=>ItemReturnDetailResourceCollection::make($this->whenLoaded('itemReturnDetails')),
         ];
     }
 }
