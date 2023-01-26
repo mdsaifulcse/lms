@@ -73,7 +73,7 @@ class PublisherController extends Controller
                 $input['photo']=$photo;
             }
             $publisher=$this->model->create($input);
-            return $this->respondWithSuccess('Publisher Info has been updated successful',new  PublisherResource($publisher),Response::HTTP_OK);
+            return $this->respondWithSuccess('Publisher Info has been created successful',new  PublisherResource($publisher),Response::HTTP_OK);
 
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -89,7 +89,7 @@ class PublisherController extends Controller
             'address1'  => "nullable|max:800",
             'address2'  => "nullable|max:800",
             'establish'  => "nullable|max:15",
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];
@@ -179,7 +179,7 @@ class PublisherController extends Controller
             'contact'  => "nullable|max:50",
             'address1'  => "nullable|max:800",
             'address2'  => "nullable|max:800",
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];

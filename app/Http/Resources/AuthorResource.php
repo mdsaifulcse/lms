@@ -14,14 +14,14 @@ class AuthorResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+       return [
             'id'=>$this->id,
             'name'=>$this->name,
             'email'=>$this->email,
             'mobile'=>$this->mobile,
             'contact'=>$this->contact,
-            'contact1'=>$this->contact1,
-            'contact2'=>$this->contact2,
+            'address1'=>$this->address1,
+            'address2'=>$this->address2,
             'bio'=>$this->bio,
             'show_home'=>$this->show_home,
             'status'=>$this->status,

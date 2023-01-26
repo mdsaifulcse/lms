@@ -71,7 +71,7 @@ class LanguageController extends Controller
     public function storeValidationRules($request){
         return [
             'name' => 'required|max:100',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:1,0",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];
@@ -142,7 +142,7 @@ class LanguageController extends Controller
     public function updateValidationRules($request){
         return [
             'name' => 'required|max:100',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:1,0",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];

@@ -64,7 +64,7 @@ trait ApiResponseTrait
             'status' => 'OK',
             'access_token' => $token,
             'token_type' => 'bearer',
-            'messages' => $message,
+            'message' => $message,
             'user' => $user,
             //'expires_in' => auth('api')->factory()->getTTL() * 60
         ],Response::HTTP_OK)->setStatusCode(Response::HTTP_OK);
@@ -84,12 +84,13 @@ trait ApiResponseTrait
         ],Response::HTTP_OK)->setStatusCode(Response::HTTP_OK);
     }
 
-    protected function respondWithSuccess($message='', $data=[],$code = Response::HTTP_OK)
+    protected function respondWithSuccess($message='', $datas=[],$code = Response::HTTP_OK)
     {
+        //return $datas;
         return response()->json([
             'status' => 'OK',
-            'messages' => $message,
-            'result' => $data
+            'message' => $message,
+            'result' => $datas
         ],$code);
 
     }
@@ -98,7 +99,7 @@ trait ApiResponseTrait
     {
         return response()->json([
             'status'=>'FAIL',
-            'messages'=>$message,
+            'message'=>$message,
             'result'=>$data
         ], $code);
     }
@@ -107,8 +108,8 @@ trait ApiResponseTrait
     {
         return response()->json([
                 'status'=>'FAIL',
-                'messages'=>$message,
-                'message_bag'=>$messageBag,
+                'message'=>$message,
+                'errors'=>$messageBag,
                 'result'=>[]
             ],$code);
     }
@@ -125,7 +126,7 @@ trait ApiResponseTrait
     {
         return response()->json([
             'status'=>'FAIL',
-            'messages'=>$message,
+            'message'=>$message,
             'result'=>$data
         ],$code);
     }

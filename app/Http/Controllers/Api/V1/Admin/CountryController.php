@@ -69,7 +69,7 @@ class CountryController extends Controller
                 $input['photo']=$photo;
             }
             $country=$this->model->create($input);
-            return $this->respondWithSuccess('Author Info has been created successful',new  CountryResource($country),Response::HTTP_OK);
+            return $this->respondWithSuccess('Country Info has been created successful',new  CountryResource($country),Response::HTTP_OK);
 
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -79,7 +79,7 @@ class CountryController extends Controller
     public function storeValidationRules($request){
         return [
             'name' => 'required|max:100',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];
@@ -150,7 +150,7 @@ class CountryController extends Controller
 
             $country->update($input);
 
-            return $this->respondWithSuccess('Author Info has been updated successful',new  CountryResource($country),Response::HTTP_OK);
+            return $this->respondWithSuccess('Country Info has been updated successful',new  CountryResource($country),Response::HTTP_OK);
 
         }catch(Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -160,7 +160,7 @@ class CountryController extends Controller
     public function updateValidationRules($request){
         return [
             'name' => 'required|max:100',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];

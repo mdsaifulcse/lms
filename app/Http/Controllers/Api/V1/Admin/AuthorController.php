@@ -31,7 +31,7 @@ class AuthorController extends Controller
     {
         try{
             $authors=$this->model->latest('sequence','DESC')->get();
-            return $this->respondWithSuccess('All Author list',AuthorResourceCollection::make($authors),Response::HTTP_OK);
+            return $this->respondWithSuccess('All Author list', AuthorResourceCollection::make($authors),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -58,7 +58,6 @@ class AuthorController extends Controller
 
     public function store(Request $request)
     {
-
         $rules=$this->storeValidationRules($request);
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -74,7 +73,7 @@ class AuthorController extends Controller
                 $input['photo']=$photo;
             }
             $author=$this->model->create($input);
-            return $this->respondWithSuccess('Author Info has been updated successful',new  AuthorResource($author),Response::HTTP_OK);
+            return $this->respondWithSuccess('Author has been created successful',new  AuthorResource($author),Response::HTTP_OK);
 
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -89,7 +88,7 @@ class AuthorController extends Controller
             'contact'  => "nullable|max:50",
             'address1'  => "nullable|max:800",
             'address2'  => "nullable|max:800",
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];
@@ -135,6 +134,7 @@ class AuthorController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         $rules=$this->updateValidationRules($request);
         $validator = Validator::make($request->all(), $rules);
 
@@ -176,7 +176,7 @@ class AuthorController extends Controller
             'contact'  => "nullable|max:50",
             'address1'  => "nullable|max:800",
             'address2'  => "nullable|max:800",
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];

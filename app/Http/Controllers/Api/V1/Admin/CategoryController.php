@@ -24,6 +24,11 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function testData(){
+        return $this->model->get();
+    }
+
     public function index()
     {
         try{
@@ -73,7 +78,7 @@ class CategoryController extends Controller
         return [
             'name' => 'required|max:100',
             'description' => 'nullable|max:200',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:1,0",
             'show_home'  => "required|in:0,1",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
@@ -148,7 +153,7 @@ class CategoryController extends Controller
         return [
             'name' => 'required|max:100',
             'description' => 'nullable|max:200',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'show_home'  => "required|in:0,1",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'

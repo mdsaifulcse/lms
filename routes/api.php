@@ -19,8 +19,8 @@ use Illuminate\Support\Facades\Route;
 /*
  ---------- Client Without-Authentication -------
 */
-Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Client','prefix' => 'client','as' => 'client.'],function (){
-    Route::post('/login', 'AuthController@login');
+Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Client','prefix' => 'login','as' => 'login.'],function (){
+    Route::post('/client', 'AuthController@login');
     Route::post('/register', 'AuthController@generalUserRegister');
 });
 
@@ -40,14 +40,18 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Client','middleware' => 
 /*
  ----------Admin Without-Authentication  -------
 */
-Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','prefix' => 'admin','as' => 'admin.'],function (){
-    Route::post('/login', 'AuthController@login');
+Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','prefix' => 'login','as' => 'login.'],function (){
+    Route::post('/admin', 'AuthController@login');
+    Route::get('/test-data', 'CategoryController@testData');
 });
 
 /*
  ----------Admin With-Authentication(Token)  -------
 */
 Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => ['auth:sanctum'],'prefix' => 'admin','as' => 'admin.'],function (){
+
+    /*--------- Common Data load api --------*/
+    Route::get('/category-list', 'CommonDataLoadController@categoryList');
 
     /*--------- Item Return --------*/
     Route::apiResource('/item-returns', 'ItemReturnController');
@@ -81,6 +85,7 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
     Route::get('/third-sub-categories-max-sequence', 'ThirdSubCategoryController@getMaxSequence');
 
     Route::apiResource('/authors', 'AuthorController');
+    //Route::post('/authors/{id}', 'AuthorController@update');
     Route::get('/author-max-sequence', 'AuthorController@getMaxSequence');
 
     Route::post('/login-user', 'AuthorController@loginCustom');

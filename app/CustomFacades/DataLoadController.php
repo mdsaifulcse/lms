@@ -43,57 +43,57 @@ class DataLoadController
     public function relatedProductList($productId=null)
     {
         if ($productId!=null){
-            return Product::orderBy('serial_num','ASC')->where('id','!=',$productId)->where(['status'=>Product::PUBLISHED])->pluck('name','id');
+            return Product::orderBy('sequence','ASC')->where('id','!=',$productId)->where(['status'=>Product::PUBLISHED])->pluck('name','id');
         }else{
-            return Product::orderBy('serial_num','ASC')->where('status',Product::PUBLISHED)->pluck('name','id');
+            return Product::orderBy('sequence','ASC')->where('status',Product::PUBLISHED)->pluck('name','id');
         }
 
     }
 
     public function collectionList()
     {
-       return Collection::orderBy('serial_num','ASC')->where('status',Collection::ACTIVE)->pluck('collection','id');
+       return Collection::orderBy('sequence','ASC')->where('status',Collection::ACTIVE)->pluck('collection','id');
     }
 
     public function tagList()
     {
-       return Tag::orderBy('serial_num','ASC')->where('status',Tag::ACTIVE)->pluck('tag','id');
+       return Tag::orderBy('sequence','ASC')->where('status',Tag::ACTIVE)->pluck('tag','id');
     }
 
     public function packSizeUnitList()
     {
-       return PackSizeUnit::orderBy('serial_num','ASC')->where('status',PackSizeUnit::ACTIVE)->pluck('size','id');
+       return PackSizeUnit::orderBy('sequence','ASC')->where('status',PackSizeUnit::ACTIVE)->pluck('size','id');
     }
     public function originList()
     {
-       return Origin::orderBy('serial_num','ASC')->where('status',Origin::ACTIVE)->pluck('origin','id');
+       return Origin::orderBy('sequence','ASC')->where('status',Origin::ACTIVE)->pluck('origin','id');
     }
 
     public function vatTaxList()
     {
-       return VatTax::orderBy('serial_num','ASC')->where('status',VatTax::ACTIVE)->pluck('vat_tax_name','id');
+       return VatTax::orderBy('sequence','ASC')->where('status',VatTax::ACTIVE)->pluck('vat_tax_name','id');
     }
 
     public function brandList()
     {
-       return Brand::orderBy('serial_num','ASC')->where('status',Brand::ACTIVE)->pluck('brand_name','id');
+       return Brand::orderBy('sequence','ASC')->where('status',Brand::ACTIVE)->pluck('brand_name','id');
     }
 
 
     public function categoryList()
     {
-       return Category::orderBy('serial_num','ASC')->where('status',Category::ACTIVE)->pluck('category_name_bn','id');
+       return Category::select('name','id')->orderBy('sequence','ASC')->where('status',Category::ACTIVE)->get();
     }
 
     public function subCatList($categoryId=null)
     {
         if ($categoryId!=null)
         {
-            return SubCategory::orderBy('serial_num','ASC')->where(['category_id'=>$categoryId,'status'=>SubCategory::ACTIVE])->pluck('sub_category_name','id');
+            return SubCategory::orderBy('sequence','ASC')->where(['category_id'=>$categoryId,'status'=>SubCategory::ACTIVE])->pluck('sub_category_name','id');
 
         }else{
 
-            return SubCategory::orderBy('serial_num','ASC')->where(['status'=>SubCategory::ACTIVE])->pluck('sub_category_name','id');
+            return SubCategory::orderBy('sequence','ASC')->where(['status'=>SubCategory::ACTIVE])->pluck('sub_category','id');
         }
     }
 
@@ -101,11 +101,11 @@ class DataLoadController
     {
         if ($subCategoryId!=null)
         {
-            return ThirdSubCategory::orderBy('serial_num','ASC')->where(['sub_category_id'=>$subCategoryId,'status'=>SubCategory::ACTIVE])->pluck('third_sub_category','id');
+            return ThirdSubCategory::orderBy('sequence','ASC')->where(['sub_category_id'=>$subCategoryId,'status'=>SubCategory::ACTIVE])->pluck('third_sub_category','id');
 
         }else{
 
-            return ThirdSubCategory::orderBy('serial_num','ASC')->where(['status'=>SubCategory::ACTIVE])->pluck('third_sub_category','id');
+            return ThirdSubCategory::orderBy('sequence','ASC')->where(['status'=>SubCategory::ACTIVE])->pluck('third_sub_category','id');
         }
     }
 
@@ -113,11 +113,11 @@ class DataLoadController
     {
         if ($thirdSubCategoryId!=null)
         {
-            return FourthSubCategory::orderBy('serial_num','ASC')->where(['third_sub_category_id'=>$thirdSubCategoryId,'status'=>SubCategory::ACTIVE])->pluck('fourth_sub_category','id');
+            return FourthSubCategory::orderBy('sequence','ASC')->where(['third_sub_category_id'=>$thirdSubCategoryId,'status'=>SubCategory::ACTIVE])->pluck('fourth_sub_category','id');
 
         }else{
 
-            return FourthSubCategory::orderBy('serial_num','ASC')->where(['status'=>SubCategory::ACTIVE])->pluck('fourth_sub_category','id');
+            return FourthSubCategory::orderBy('sequence','ASC')->where(['status'=>SubCategory::ACTIVE])->pluck('fourth_sub_category','id');
         }
     }
 
@@ -125,12 +125,12 @@ class DataLoadController
 
     public function weightUnitList()
     {
-        return WeightUnit::orderBy('serial_num','ASC')->where('status',WeightUnit::ACTIVE)->pluck('weight_unit','id');
+        return WeightUnit::orderBy('sequence','ASC')->where('status',WeightUnit::ACTIVE)->pluck('weight_unit','id');
     }
 
     public function lengthUnitList()
     {
-        return LengthUnit::orderBy('serial_num','ASC')->where('status',LengthUnit::ACTIVE)->pluck('length_unit','id');
+        return LengthUnit::orderBy('sequence','ASC')->where('status',LengthUnit::ACTIVE)->pluck('length_unit','id');
     }
 
 
@@ -169,22 +169,22 @@ class DataLoadController
     public function bankAccountList()
     {
        return BankAccount::select(
-           DB::raw("CONCAT(account_number,' - ',account_title) AS account_name"),'id')->orderBy('serial_num','ASC')
+           DB::raw("CONCAT(account_number,' - ',account_title) AS account_name"),'id')->orderBy('sequence','ASC')
            ->where('status',BankAccount::ACTIVE)->pluck('account_name','id');
     }
 
     public function divisionList()
     {
-       return Division::orderBy('serial_num','ASC')->where('status',Division::ACTIVE)->pluck('division','id');
+       return Division::orderBy('sequence','ASC')->where('status',Division::ACTIVE)->pluck('division','id');
     }
 
     public function districtList($divisionId=null)
     {
         if ($divisionId!=null)
         {
-            return District::orderBy('serial_num','ASC')->where(['division_id'=>$divisionId,'status'=>District::ACTIVE])->pluck('district','id');
+            return District::orderBy('sequence','ASC')->where(['division_id'=>$divisionId,'status'=>District::ACTIVE])->pluck('district','id');
         }else{
-            return District::orderBy('serial_num','ASC')->where(['status'=>District::ACTIVE])->pluck('district','id');
+            return District::orderBy('sequence','ASC')->where(['status'=>District::ACTIVE])->pluck('district','id');
         }
 
     }
@@ -217,9 +217,9 @@ class DataLoadController
     {
         if ($headType!=null)
         {
-            return IncomeExpenseHead::orderBy('serial_num','ASC')->where(['head_type'=>$headType,'status'=>IncomeExpenseHead::ACTIVE])->pluck('head_title','id');
+            return IncomeExpenseHead::orderBy('sequence','ASC')->where(['head_type'=>$headType,'status'=>IncomeExpenseHead::ACTIVE])->pluck('head_title','id');
         }else{
-            return IncomeExpenseHead::orderBy('serial_num','ASC')->where(['status'=>IncomeExpenseHead::ACTIVE])->pluck('head_title','id');
+            return IncomeExpenseHead::orderBy('sequence','ASC')->where(['status'=>IncomeExpenseHead::ACTIVE])->pluck('head_title','id');
         }
     }
 
@@ -227,10 +227,10 @@ class DataLoadController
     {
         if ($headId!=null)
         {
-           return IncomeExpenseSubHead::orderBy('serial_num','ASC')
+           return IncomeExpenseSubHead::orderBy('sequence','ASC')
                 ->where(['income_expense_head_id'=>$headId,'status'=>IncomeExpenseSubHead::ACTIVE])->pluck('sub_head_title','id');
         }else{
-           return IncomeExpenseSubHead::orderBy('serial_num','ASC')
+           return IncomeExpenseSubHead::orderBy('sequence','ASC')
                 ->where(['status'=>IncomeExpenseSubHead::ACTIVE])->pluck('sub_head_title','id');
         }
     }
@@ -256,22 +256,22 @@ class DataLoadController
 
     public function countryList()
     {
-        return Country::orderBy('serial_num','ASC')->where('status',Country::ACTIVE)->pluck('name','id');
+        return Country::orderBy('sequence','ASC')->where('status',Country::ACTIVE)->pluck('name','id');
     }
 
     public function languageList()
     {
-        return Language::orderBy('serial_num','ASC')->where('status',Language::ACTIVE)->pluck('name','id');
+        return Language::orderBy('sequence','ASC')->where('status',Language::ACTIVE)->pluck('name','id');
     }
 
     public function authorList()
     {
-        return Author::orderBy('serial_num','ASC')->where('status',Author::ACTIVE)->pluck('name','id');
+        return Author::orderBy('sequence','ASC')->where('status',Author::ACTIVE)->pluck('name','id');
     }
 
     public function publisherList()
     {
-        return Publisher::orderBy('serial_num','ASC')->where('status',Publisher::ACTIVE)->pluck('name','id');
+        return Publisher::orderBy('sequence','ASC')->where('status',Publisher::ACTIVE)->pluck('name','id');
     }
 
 

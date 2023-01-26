@@ -68,15 +68,12 @@ class AuthController extends Controller
     }
 
     public function login(Request $request){
-
         $rules=$this->loginValidationRules($request);
         $validator = Validator::make($request->json()->all(), $rules);
 
         if ($validator->fails()) {
             return $this->respondWithValidation('Validation Fail',$validator->errors()->first(),Response::HTTP_BAD_REQUEST);
         }
-
-        // return $request;
 
         try{
 
@@ -100,8 +97,9 @@ class AuthController extends Controller
     public function loginValidationRules($request){
 
         $rules=[
+            'username' => 'required',
             'password' => 'required',
-            'username' => 'required'
+
         ];
 
         return $rules;

@@ -27,7 +27,7 @@ class SubCategoryController extends Controller
     public function index()
     {
         try{
-            $subCategories=$this->model->latest('sequence','DESC')->get();
+            $subCategories=$this->model->with('category')->latest('sequence','DESC')->get();
             return $this->respondWithSuccess('All Sub Category list',SubCategoryResourceCollection::make($subCategories),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -74,7 +74,7 @@ class SubCategoryController extends Controller
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|max:100',
             'description' => 'nullable|max:200',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];
@@ -149,7 +149,7 @@ class SubCategoryController extends Controller
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|max:100',
             'description' => 'nullable|max:200',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];
