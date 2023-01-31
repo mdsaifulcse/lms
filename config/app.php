@@ -178,7 +178,8 @@ return [
         App\Providers\JetstreamServiceProvider::class,
 
         RealRashid\SweetAlert\SweetAlertServiceProvider::class,
-        Intervention\Image\ImageServiceProvider::class
+        Intervention\Image\ImageServiceProvider::class,
+        App\Providers\DataLoadServiceProvider::class,
 
     ],
 

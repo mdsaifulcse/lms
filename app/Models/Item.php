@@ -19,6 +19,15 @@ class Item extends Model
         'language_id','country_id','category_id','subcategory_id','third_category_id','sequence','status','created_by','updated_by'];
 
 
+    public function country(){
+        return $this->belongsTo(Country::class,'country_id','id');
+    }
+    public function publisher(){
+        return $this->belongsTo(Publisher::class,'publisher_id','id');
+    }
+    public function language(){
+        return $this->belongsTo(Language::class,'language_id','id');
+    }
     public function itemAuthors(){
         return $this->hasMany(ItemAuthor::class,'item_id','id');
     }

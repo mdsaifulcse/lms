@@ -29,7 +29,7 @@ class ItemController extends Controller
     public function index()
     {
         try{
-            $items=$this->model->with('itemAuthors','itemThumbnails')->latest('sequence','DESC')->get();
+            $items=$this->model->with('country','publisher','language','itemAuthors','itemThumbnails')->latest('sequence','DESC')->get();
             return $this->respondWithSuccess('All Item list',ItemResourceCollection::make($items),Response::HTTP_OK);
         }catch(Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -111,7 +111,7 @@ class ItemController extends Controller
             'third_category_id'  => "nullable|exists:third_sub_categories,id",
             "author_id"   => "required|array|min:1",
             'author_id.*' => "exists:authors,id",
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];
@@ -311,7 +311,7 @@ class ItemController extends Controller
             'third_category_id'  => "nullable|exists:third_sub_categories,id",
             "author_id"   => "required|array|min:1",
             'author_id.*' => "exists:authors,id",
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
         ];
     }

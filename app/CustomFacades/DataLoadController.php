@@ -78,7 +78,25 @@ class DataLoadController
     {
        return Brand::orderBy('sequence','ASC')->where('status',Brand::ACTIVE)->pluck('brand_name','id');
     }
+    public function countryList()
+    {
+        return Country::orderBy('sequence','ASC')->where('status',Country::ACTIVE)->get(['name','id']);
+    }
 
+    public function languageList()
+    {
+        return Language::orderBy('sequence','ASC')->where('status',Language::ACTIVE)->get(['name','id']);
+    }
+
+    public function authorList()
+    {
+        return Author::orderBy('sequence','ASC')->where('status',Author::ACTIVE)->get(['name','id']);
+    }
+
+    public function publisherList()
+    {
+        return Publisher::orderBy('sequence','ASC')->where('status',Publisher::ACTIVE)->get(['name','id']);
+    }
 
     public function categoryList()
     {
@@ -89,11 +107,11 @@ class DataLoadController
     {
         if ($categoryId!=null)
         {
-            return SubCategory::orderBy('sequence','ASC')->where(['category_id'=>$categoryId,'status'=>SubCategory::ACTIVE])->pluck('sub_category_name','id');
+            return SubCategory::select('name','id','category_id')->orderBy('sequence','ASC')->where(['category_id'=>$categoryId,'status'=>SubCategory::ACTIVE])->get();
 
         }else{
 
-            return SubCategory::orderBy('sequence','ASC')->where(['status'=>SubCategory::ACTIVE])->pluck('sub_category','id');
+            return SubCategory::select('name','id','category_id')->orderBy('sequence','ASC')->where(['status'=>SubCategory::ACTIVE])->get();
         }
     }
 
@@ -101,11 +119,11 @@ class DataLoadController
     {
         if ($subCategoryId!=null)
         {
-            return ThirdSubCategory::orderBy('sequence','ASC')->where(['sub_category_id'=>$subCategoryId,'status'=>SubCategory::ACTIVE])->pluck('third_sub_category','id');
+            return ThirdSubCategory::select('name','id','category_id')->orderBy('sequence','ASC')->where(['sub_category_id'=>$subCategoryId,'status'=>ThirdSubCategory::ACTIVE])->pluck('name','id');
 
         }else{
 
-            return ThirdSubCategory::orderBy('sequence','ASC')->where(['status'=>SubCategory::ACTIVE])->pluck('third_sub_category','id');
+            return ThirdSubCategory::select('name','id','category_id')->orderBy('sequence','ASC')->where(['status'=>ThirdSubCategory::ACTIVE])->pluck('name','id');
         }
     }
 
@@ -254,25 +272,6 @@ class DataLoadController
         ];
     }
 
-    public function countryList()
-    {
-        return Country::orderBy('sequence','ASC')->where('status',Country::ACTIVE)->pluck('name','id');
-    }
-
-    public function languageList()
-    {
-        return Language::orderBy('sequence','ASC')->where('status',Language::ACTIVE)->pluck('name','id');
-    }
-
-    public function authorList()
-    {
-        return Author::orderBy('sequence','ASC')->where('status',Author::ACTIVE)->pluck('name','id');
-    }
-
-    public function publisherList()
-    {
-        return Publisher::orderBy('sequence','ASC')->where('status',Publisher::ACTIVE)->pluck('name','id');
-    }
 
 
 }

@@ -27,7 +27,7 @@ class ThirdSubCategoryController extends Controller
     public function index()
     {
         try{
-            $thirdCategories=$this->model->latest('sequence','DESC')->get();
+            $thirdCategories=$this->model->with('suCategory')->latest('sequence','DESC')->get();
             return $this->respondWithSuccess('All Third Category list',ThirdSubCategoryResourceCollection::make($thirdCategories),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -63,7 +63,7 @@ class ThirdSubCategoryController extends Controller
             $this->model->create($request->all());
 
             $thirdCategory=$this->model->latest()->first();
-            return $this->respondWithSuccess('Sub Category Info has been created successful',new  ThirdSubCategoryResource($thirdCategory),Response::HTTP_OK);
+            return $this->respondWithSuccess('Third Sub Category Info has been created successful',new  ThirdSubCategoryResource($thirdCategory),Response::HTTP_OK);
 
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -75,7 +75,7 @@ class ThirdSubCategoryController extends Controller
             'sub_category_id' => 'required|exists:sub_categories,id',
             'name' => 'required|max:100',
             'description' => 'nullable|max:200',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];
@@ -150,7 +150,7 @@ class ThirdSubCategoryController extends Controller
             'sub_category_id' => 'required|exists:sub_categories,id',
             'name' => 'required|max:100',
             'description' => 'nullable|max:200',
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             'sequence'  => "required",
             //'photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
         ];

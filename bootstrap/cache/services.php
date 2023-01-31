@@ -47,6 +47,7 @@
     43 => 'App\\Providers\\JetstreamServiceProvider',
     44 => 'RealRashid\\SweetAlert\\SweetAlertServiceProvider',
     45 => 'Intervention\\Image\\ImageServiceProvider',
+    46 => 'App\\Providers\\DataLoadServiceProvider',
   ),
   'eager' => 
   array (
@@ -81,6 +82,7 @@
     28 => 'App\\Providers\\JetstreamServiceProvider',
     29 => 'RealRashid\\SweetAlert\\SweetAlertServiceProvider',
     30 => 'Intervention\\Image\\ImageServiceProvider',
+    31 => 'App\\Providers\\DataLoadServiceProvider',
   ),
   'deferred' => 
   array (

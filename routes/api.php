@@ -51,7 +51,14 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','prefix' => 'logi
 Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => ['auth:sanctum'],'prefix' => 'admin','as' => 'admin.'],function (){
 
     /*--------- Common Data load api --------*/
-    Route::get('/category-list', 'CommonDataLoadController@categoryList');
+    Route::get('/category-list', 'CommonDataLoadController@activeCategoryList');
+    Route::get('/sub-category-list/{categoryId?}', 'CommonDataLoadController@activeSubcategoryList');
+    Route::get('/active-third-sub-category-list/{subCategoryId?}', 'CommonDataLoadController@activeThirdSubcategoryList');
+
+    Route::get('/active-country-list', 'CommonDataLoadController@activeCountryList');
+    Route::get('/active-language-list', 'CommonDataLoadController@activeLanguageList');
+    Route::get('/active-author-list', 'CommonDataLoadController@activeAuthorList');
+    Route::get('/active-publisher-list', 'CommonDataLoadController@activePublisherList');
 
     /*--------- Item Return --------*/
     Route::apiResource('/item-returns', 'ItemReturnController');

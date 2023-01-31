@@ -18,4 +18,8 @@ class ThirdSubCategory extends Model
     protected $table='third_sub_categories';
     protected $fillable=['sub_category_id','name','description','icon_photo','sequence','status',];
 
+    public function suCategory(){
+        return $this->belongsTo(SubCategory::class,'sub_category_id','id');
+    }
+
 }

@@ -25,6 +25,8 @@ class CreateItemsTable extends Migration
             $table->tinyInteger('status')->default(\App\Models\Item::ACTIVE)
             ->comment('1=Active,0=Inactive');
             $table->tinyInteger('sequence',false,4)->default(0);
+            $table->tinyInteger('show_home')->default(\App\Models\Item::NO)
+                ->comment('1=Yes,0=NO');
 
             $table->foreignId('publisher_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('language_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');

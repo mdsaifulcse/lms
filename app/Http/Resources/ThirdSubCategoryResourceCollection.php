@@ -15,7 +15,7 @@ class ThirdSubCategoryResourceCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'third-sub-categories'=>$this->collection,
+            'thirdSubCategories'=>$this->collection,
         ];
     }
 }
