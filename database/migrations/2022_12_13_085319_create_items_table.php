@@ -27,6 +27,8 @@ class CreateItemsTable extends Migration
             $table->tinyInteger('sequence',false,4)->default(0);
             $table->tinyInteger('show_home')->default(\App\Models\Item::NO)
                 ->comment('1=Yes,0=NO');
+            $table->tinyInteger('publish_status')->default(\App\Models\Item::NO)
+                ->comment('1=Yes,0=NO');
 
             $table->foreignId('publisher_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('language_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');

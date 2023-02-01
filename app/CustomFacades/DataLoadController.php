@@ -90,7 +90,8 @@ class DataLoadController
 
     public function authorList()
     {
-        return Author::orderBy('sequence','ASC')->where('status',Author::ACTIVE)->get(['name','id']);
+        return Author::orderBy('sequence','ASC')->where('status',Author::ACTIVE)->get(['id','name']);
+        //return Author::orderBy('sequence','ASC')->where('status',Author::ACTIVE)->get(['id as value','name as label']);
     }
 
     public function publisherList()
