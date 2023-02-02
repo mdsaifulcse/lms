@@ -35,12 +35,12 @@ class CreateItemsTable extends Migration
             $table->foreignId('country_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
 
 
-            $table->unsignedBigInteger('category_id');
-            $table->unsignedBigInteger('subcategory_id')->nullable();
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table->unsignedBigInteger('sub_category_id')->nullable();
             $table->unsignedBigInteger('third_category_id')->nullable();
 
             $table->foreign('category_id')->references('id')->on('categories')->cascadeOnDelete();
-            $table->foreign('subcategory_id')->references('id')->on('sub_categories')->cascadeOnDelete();
+            $table->foreign('sub_category_id')->references('id')->on('sub_categories')->cascadeOnDelete();
             $table->foreign('third_category_id')->references('id')->on('third_sub_categories')->cascadeOnDelete();
 
             $table->unsignedBigInteger('created_by', false);
@@ -66,7 +66,7 @@ class CreateItemsTable extends Migration
             $table->dropForeign(['country_id']);
 
             $table->dropForeign(['category_id']);
-            $table->dropForeign(['subcategory_id']);
+            $table->dropForeign(['sub_category_id']);
             $table->dropForeign(['third_category_id']);
 
             $table->dropForeign(['created_by']);

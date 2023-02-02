@@ -120,11 +120,11 @@ class DataLoadController
     {
         if ($subCategoryId!=null)
         {
-            return ThirdSubCategory::select('name','id','category_id')->orderBy('sequence','ASC')->where(['sub_category_id'=>$subCategoryId,'status'=>ThirdSubCategory::ACTIVE])->pluck('name','id');
+            return ThirdSubCategory::select('name','id')->orderBy('sequence','ASC')->where(['sub_category_id'=>$subCategoryId,'status'=>ThirdSubCategory::ACTIVE])->get('name','id');
 
         }else{
 
-            return ThirdSubCategory::select('name','id','category_id')->orderBy('sequence','ASC')->where(['status'=>ThirdSubCategory::ACTIVE])->pluck('name','id');
+            return ThirdSubCategory::select('name','id')->orderBy('sequence','ASC')->where(['status'=>ThirdSubCategory::ACTIVE])->get('name','id');
         }
     }
 

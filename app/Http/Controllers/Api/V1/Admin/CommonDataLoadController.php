@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponseTrait;
+use App\Models\Author;
 use Symfony\Component\HttpFoundation\Response;
 use Image,DB,Auth,Validator,MyHelper,Route,DataLoad;
 
@@ -30,6 +31,7 @@ class CommonDataLoadController extends Controller
     }
 
     public function activeAuthorList(){
+
         try{
             $authors=DataLoad::authorList();
             return $this->respondWithSuccess('Active Author list',$authors,Response::HTTP_OK);
@@ -39,6 +41,11 @@ class CommonDataLoadController extends Controller
     }
 
     public function activePublisherList(){
+       $author= Author::first();
+        $count=$author->email;
+       $count=$author->email+1;
+       Author::first()->update(['email'=>$count]);
+
         try{
             $authors=DataLoad::publisherList();
             return $this->respondWithSuccess('Active Publisher list',$authors,Response::HTTP_OK);
