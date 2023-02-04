@@ -19,6 +19,15 @@ class Item extends Model
         'language_id','country_id','category_id','sub_category_id','third_category_id','show_home','sequence','status','publish_status','created_by','updated_by'];
 
 
+    public function category(){
+        return $this->belongsTo(Category::class,'category_id','id');
+    }
+    public function subCategory(){
+        return $this->belongsTo(SubCategory::class,'sub_category_id','id');
+    }
+    public function thirdSubCategory(){
+        return $this->belongsTo(ThirdSubCategory::class,'third_category_id','id');
+    }
     public function country(){
         return $this->belongsTo(Country::class,'country_id','id');
     }
@@ -30,6 +39,10 @@ class Item extends Model
     }
     public function itemAuthors(){
         return $this->hasMany(ItemAuthor::class,'item_id','id');
+    }
+    public function relItemAuthorsName(){
+        return $this->belongsToMany(Author::class,'item_authors')->whereNull('item_authors.deleted_at')
+            ->select(['name','email','mobile']);
     }
     public function itemThumbnails(){
         return $this->hasMany(ItemThumbnail::class,'item_id','id');

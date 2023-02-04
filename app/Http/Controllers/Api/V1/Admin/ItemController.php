@@ -216,7 +216,7 @@ class ItemController extends Controller
     public function show($id)
     {
         try{
-            $item=$this->model->with('itemAuthors','itemThumbnails')->where('id',$id)->first();
+            $item=$this->model->with('itemAuthors','itemThumbnails','relItemAuthorsName')->where('id',$id)->first();
             if ($item){
                 return $this->respondWithSuccess('Item Info',new  ItemResource($item),Response::HTTP_OK);
             }else{

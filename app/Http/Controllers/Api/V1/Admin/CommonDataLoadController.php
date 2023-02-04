@@ -41,11 +41,10 @@ class CommonDataLoadController extends Controller
     }
 
     public function activePublisherList(){
-       $author= Author::first();
-        $count=$author->email;
-       $count=$author->email+1;
-       Author::first()->update(['email'=>$count]);
-
+//       $author= Author::first();
+//        $count=$author->email;
+//       $count=$author->email+1;
+//       Author::first()->update(['email'=>$count]);
         try{
             $authors=DataLoad::publisherList();
             return $this->respondWithSuccess('Active Publisher list',$authors,Response::HTTP_OK);
