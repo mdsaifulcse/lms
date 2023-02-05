@@ -42,10 +42,10 @@ class Item extends Model
     }
     public function relItemAuthorsName(){
         return $this->belongsToMany(Author::class,'item_authors')->whereNull('item_authors.deleted_at')
-            ->select(['name','email','mobile']);
+            ->select(['name','email','mobile','authors.id']);
     }
     public function itemThumbnails(){
-        return $this->hasMany(ItemThumbnail::class,'item_id','id');
+        return $this->hasMany(ItemThumbnail::class,'item_id','id')->orderBy('id','DESC');
     }
 
     public static function boot(){

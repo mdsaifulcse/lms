@@ -15,10 +15,11 @@ class ItemThumbnailResource extends JsonResource
     public function toArray($request)
     {
         return [
-          'item_id '=>$this->item_id,
-          'big '=>$this->big?url($this->big):null,
-          'medium '=>$this->medium?url($this->medium):null,
-          'small '=>$this->small?url($this->small):null,
+          'id'=>$this->id,
+          'item_id'=>$this->item_id,
+          'big'=>$this->big?url($this->big):null,
+          'medium'=>$this->medium?url($this->medium):null,
+          'small'=>$this->small?url($this->small):null,
         ];
     }
 }

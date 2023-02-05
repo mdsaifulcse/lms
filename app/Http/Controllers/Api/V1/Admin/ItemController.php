@@ -121,7 +121,7 @@ class ItemController extends Controller
         $itemImages=[];
         foreach ($request->image as $key=>$imageData) {
 
-            if ($update == true) {
+            if ($update == true) { // Update and create ------
                 $oldImage = ItemThumbnail::where(['id' => $key, 'item_id' => $itemId])->first();
 
                 if (!empty($oldImage))
@@ -163,7 +163,7 @@ class ItemController extends Controller
                 }
 
 
-            }else{
+            }else{ // New create ------
 
                 $imagePaths = \MyHelper::multiPhotoUpload($imageData, 'images/items/big', 750);
 
@@ -223,7 +223,7 @@ class ItemController extends Controller
                 return $this->respondWithError('No data found',[],Response::HTTP_NOT_FOUND);
             }
         }catch(\Exception $e){
-            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->respondWithError("Something went wrong, Try again later $e->getMessage()",$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
