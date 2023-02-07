@@ -21,7 +21,7 @@ class CreateItemOrdersTable extends Migration
             $table->timestamp('tentative_date')->comment('Tentative delivery date');
 
             $table->foreignId('vendor_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
-
+            $table->string('note')->nullable();
             $table->tinyInteger('status')->default(\App\Models\ItemOrder::ACTIVE)
                 ->comment('1=Active,0=Inactive');
             $table->unsignedBigInteger('created_by', false);

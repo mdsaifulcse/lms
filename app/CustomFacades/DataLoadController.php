@@ -93,6 +93,11 @@ class DataLoadController
         return Author::orderBy('sequence','ASC')->where('status',Author::ACTIVE)->get(['id','name']);
         //return Author::orderBy('sequence','ASC')->where('status',Author::ACTIVE)->get(['id as value','name as label']);
     }
+    public function vendorList()
+    {
+        return Vendor::select(DB::raw("CONCAT(name,'-',mobile) AS name"),'id')
+            ->where('status',Vendor::ACTIVE)->get('name','id');
+    }
 
     public function publisherList()
     {
@@ -151,15 +156,6 @@ class DataLoadController
     {
         return LengthUnit::orderBy('sequence','ASC')->where('status',LengthUnit::ACTIVE)->pluck('length_unit','id');
     }
-
-
-    public function vendorList()
-    {
-       return Vendor::select(DB::raw("CONCAT(name,'-',mobile) AS vname"),'id')
-           ->where('status',Vendor::ACTIVE)->pluck('vname','id');
-    }
-
-
 
     public function purchaseNoList($vendorId=null)
     {

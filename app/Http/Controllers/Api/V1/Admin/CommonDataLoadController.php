@@ -12,10 +12,27 @@ class CommonDataLoadController extends Controller
 {
     use ApiResponseTrait;
 
-    public function activeCountryList(){
+    public function activeVendorsList(){
         try{
-            $countries=DataLoad::countryList();
-            return $this->respondWithSuccess('Active Country list',$countries,Response::HTTP_OK);
+            $categories=DataLoad::vendorList();
+            return $this->respondWithSuccess('Active Vendors list',$categories,Response::HTTP_OK);
+        }catch(\Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    public function activeAuthorList(){
+
+        try{
+            $authors=DataLoad::authorList();
+            return $this->respondWithSuccess('Active Author list',$authors,Response::HTTP_OK);
+        }catch(\Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    public function activePublisherList(){
+        try{
+            $authors=DataLoad::publisherList();
+            return $this->respondWithSuccess('Active Publisher list',$authors,Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -29,29 +46,15 @@ class CommonDataLoadController extends Controller
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-    public function activeAuthorList(){
-
+    public function activeCountryList(){
         try{
-            $authors=DataLoad::authorList();
-            return $this->respondWithSuccess('Active Author list',$authors,Response::HTTP_OK);
+            $countries=DataLoad::countryList();
+            return $this->respondWithSuccess('Active Country list',$countries,Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function activePublisherList(){
-//       $author= Author::first();
-//        $count=$author->email;
-//       $count=$author->email+1;
-//       Author::first()->update(['email'=>$count]);
-        try{
-            $authors=DataLoad::publisherList();
-            return $this->respondWithSuccess('Active Publisher list',$authors,Response::HTTP_OK);
-        }catch(\Exception $e){
-            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
 
     public function activeCategoryList(){
         try{
@@ -61,7 +64,6 @@ class CommonDataLoadController extends Controller
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
     public function activeSubcategoryList($categoryId=null){
         try{
             $categories=DataLoad::subCatList($categoryId);

@@ -28,7 +28,7 @@ class ItemOrderController extends Controller
     public function index()
     {
         try{
-            $itemOrders=$this->model->with('itemOrderDetails')->latest()->get();
+            $itemOrders=$this->model->with('vendor','itemOrderDetails')->latest()->get();
             return $this->respondWithSuccess('All Item list',ItemOrderResourceCollection::make($itemOrders),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -75,7 +75,7 @@ class ItemOrderController extends Controller
             'amount'  => "required|numeric|digits_between:1,999999",
             'tentative_date'  => "nullable",
             'vendor_id'  => "nullable|exists:vendors,id",
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             "item_id"   => "required|array|min:1",
             'item_id.*' => "exists:items,id",
 
@@ -216,7 +216,7 @@ class ItemOrderController extends Controller
             'amount'  => "required|numeric|digits_between:1,999999",
             'tentative_date'  => "nullable",
             'vendor_id'  => "nullable|exists:vendors,id",
-            'status'  => "required|in:1,2",
+            'status'  => "required|in:0,1",
             "item_id"   => "required|array|min:1",
             'item_id.*' => "exists:items,id",
 

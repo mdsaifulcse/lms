@@ -20,7 +20,9 @@ class ItemOrderResource extends JsonResource
         'qty'=>$this->qty,
         'amount'=>$this->amount,
         'tentative_date'=>$this->tentative_date,
-        'vendor_id '=>$this->vendor_id ,
+        'vendor_id '=>$this->vendor_id,
+        'vendor_name'=>$this->vendor?$this->vendor->name:'',
+        'vendor_mobile'=>$this->vendor?$this->vendor->mobile:'',
         'status'=>$this->status,
         'itemOrderDetails'=>ItemOrderDetailsResourceCollection::make($this->whenLoaded('itemOrderDetails')),
     ];

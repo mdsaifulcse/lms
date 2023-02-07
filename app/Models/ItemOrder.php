@@ -16,7 +16,11 @@ class ItemOrder extends Model
     const YES=1;
     const NO=0;
     protected $table='item_orders';
-    protected $fillable=['order_no','qty','amount','tentative_date','vendor_id','status','created_by','updated_by'];
+    protected $fillable=['order_no','qty','amount','tentative_date','vendor_id','note','status','created_by','updated_by'];
+
+    public function vendor(){
+        return $this->belongsTo(Vendor::class,'vendor_id','id');
+    }
 
     public function itemOrderDetails(){
         return $this->hasMany(ItemOrderDetail::class,'item_order_id','id');

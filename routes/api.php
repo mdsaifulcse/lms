@@ -59,6 +59,7 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
     Route::get('/active-language-list', 'CommonDataLoadController@activeLanguageList');
     Route::get('/active-author-list', 'CommonDataLoadController@activeAuthorList');
     Route::get('/active-publisher-list', 'CommonDataLoadController@activePublisherList');
+    Route::get('/active-vendors-list', 'CommonDataLoadController@activeVendorsList');
 
     /*--------- Item Return --------*/
     Route::apiResource('/item-returns', 'ItemReturnController');
