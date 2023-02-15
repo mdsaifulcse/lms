@@ -18,6 +18,8 @@ class CreateItemOrdersTable extends Migration
             $table->string('order_no',30);
             $table->tinyInteger('qty',false,4)->default(0);
             $table->float('amount')->default(0);
+            $table->float('discount')->default(0);
+            $table->float('total')->default(0)->comment('after discount from am');
             $table->timestamp('tentative_date')->comment('Tentative delivery date');
 
             $table->foreignId('vendor_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');

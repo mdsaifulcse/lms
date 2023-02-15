@@ -50,6 +50,10 @@ class ItemReceiveController extends Controller
      */
     public function store(Request $request)
     {
+        // 1. Store to item_receives -----------
+        // 2. Store Item Order Details (item_receive_details) and calculate payment status, payable amount  ----
+        // 3. Update item_inventory_stocks --------------------
+        // 4. Vendor payment Create ------
         $receiveNo=$this->generateItemReceiveNo();
         $request['receive_no']=$receiveNo;
         $rules=$this->storeValidationRules($request);
@@ -94,14 +98,14 @@ class ItemReceiveController extends Controller
             'item_order_id'  => "required|exists:item_orders,id",
             'vendor_id'  => "required|exists:vendors,id",
             'qty'  => "required|numeric|digits_between:1,4",
-            'paid_amount'  => "numeric|digits_between:1,6",
+            'paid_amount'  => "numeric|digits_between:1,7",
             'comments'  => "nullable|max:200",
 
             "item_id"   => "required|array|min:1",
             'item_id.*' => "exists:items,id",
 
             "item_qty"   => "required|array|min:1",
-            'item_qty.*' => "digits_between:1,4",
+            'item_qty.*' => "numeric|digits_between:1,4",
 
             'invoice_no' => 'nullable|max:50',
             'invoice_photo' => 'image|mimes:jpeg,jpg,png,gif|nullable|max:8048'
@@ -120,32 +124,35 @@ class ItemReceiveController extends Controller
 
             $qty+=$request->item_qty[$key]?$request->item_qty[$key]:0;
 
-            $itemOrderDetail=ItemOrderDetail::where(['item_order_id'=>$request->item_order_id,'item_id'=>$request->item_id[$key]])
+            // get Item price when order placed ---------
+            $itemOrderDetail=ItemOrderDetail::select('item_price')->where(['item_order_id'=>$request->item_order_id,'item_id'=>$request->item_id[$key]])
                 ->first();
 
+            // Calculate Item Total Amount ----
             $totalAmount+=$itemOrderDetail->item_price?$itemOrderDetail->item_price:0;
         }
         ItemReceiveDetail::insert($itemReceiveDetail);
 
-        // --------- Calculate Payment Status ---------
+        // --------- Calculate Payment Status, due Amount ---------
         $dueAmount=$totalAmount-$request->paid_amount;
         $paymentStatus=ItemReceive::UNPAID;
 
         if ($dueAmount==0){
             $paymentStatus=ItemReceive::PAID;
-        }elseif ($request->paid_amount>$totalAmount){
+        }elseif ($request->paid_amount!=$totalAmount){
             $paymentStatus=ItemReceive::DUE;
         }
 
         // --------- update ItemReceive ---------------
         $itemReceive=ItemReceive::find($itemReceiveId);
-        $itemReceive->update(['qty'=>$qty,
+        $itemReceive->update([
+            'qty'=>$qty,
             'payable_amount'=>$totalAmount,
             'due_amount'=>$dueAmount,
             'payment_status'=>$paymentStatus,
         ]);
 
-        //----- Vendor payment -------------------------
+        //----- Create Vendor payment -------------------------
         VendorPayment::create([
             'vendor_payment_no'=>$this->generateVendorPaymentNo(),
             'vendor_id'=>$request->vendor_id,
@@ -163,10 +170,12 @@ class ItemReceiveController extends Controller
             $itemInventoryStock=ItemInventoryStock::where(['id'=>$itemId])->first();
             $qty=$request->item_qty[$key]?$request->item_qty[$key]:0;
 
+            // Update Item Qty with previous qty
             if ($itemInventoryStock){
                 $qty+=$request->item_qty[$key]?$request->item_qty[$key]:0;
-                $itemInventoryStock->update(['qty'=>$request->item_qty[$key]]);
+                $itemInventoryStock->update(['qty'=>$qty]); //$request->item_qty[$key]
             }else{
+                // Create new inventoryStock -------
                 ItemInventoryStock::create(['item_id'=>$itemId,'qty'=>$qty]);
             }
 

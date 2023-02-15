@@ -19,6 +19,7 @@ use App\Models\Division;
 use App\Models\FourthSubCategory;
 use App\Models\IncomeExpenseHead;
 use App\Models\IncomeExpenseSubHead;
+use App\Models\Item;
 use App\Models\Language;
 use App\Models\LengthUnit;
 use App\Models\OrderAssignDelivery;
@@ -39,7 +40,6 @@ use phpDocumentor\Reflection\Types\Null_;
 use DB;
 class DataLoadController
 {
-
     public function relatedProductList($productId=null)
     {
         if ($productId!=null){
@@ -47,7 +47,6 @@ class DataLoadController
         }else{
             return Product::orderBy('sequence','ASC')->where('status',Product::PUBLISHED)->pluck('name','id');
         }
-
     }
 
     public function collectionList()

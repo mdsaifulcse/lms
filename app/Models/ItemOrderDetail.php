@@ -17,4 +17,8 @@ class ItemOrderDetail extends Model
     const NO=0;
     protected $table='item_order_details';
     protected $fillable=['item_order_id','item_id','item_qty','item_price'];
+
+    public function item(){
+        return $this->belongsTo(Item::class,'item_id','id');
+    }
 }

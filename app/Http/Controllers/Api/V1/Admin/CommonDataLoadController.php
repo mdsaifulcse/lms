@@ -5,12 +5,24 @@ namespace App\Http\Controllers\Api\V1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponseTrait;
 use App\Models\Author;
+use App\Models\Item;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Image,DB,Auth,Validator,MyHelper,Route,DataLoad;
 
 class CommonDataLoadController extends Controller
 {
     use ApiResponseTrait;
+
+    public function activeItemSearch(Request $request)
+    {
+        if ($request->q && !empty($request->q)){
+            return Item::select('title','id')
+                ->where('title', 'like', '%' .$request->q. '%')->get();
+        }else{
+            return [];
+        }
+    }
 
     public function activeVendorsList(){
         try{

@@ -60,6 +60,7 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
     Route::get('/active-author-list', 'CommonDataLoadController@activeAuthorList');
     Route::get('/active-publisher-list', 'CommonDataLoadController@activePublisherList');
     Route::get('/active-vendors-list', 'CommonDataLoadController@activeVendorsList');
+    Route::get('/active-item-search', 'CommonDataLoadController@activeItemSearch');
 
     /*--------- Item Return --------*/
     Route::apiResource('/item-returns', 'ItemReturnController');
@@ -72,8 +73,10 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
 
     /*--------- Item receive--------*/
     Route::apiResource('/item-received', 'ItemReceiveController');
+    Route::get('/item-received-no', 'ItemReceiveController@generateItemReceiveNo');
     /*--------- Item Order--------*/
     Route::apiResource('/item-orders', 'ItemOrderController');
+    Route::get('/item-order-no', 'ItemOrderController@generateOrderInvoiceNo');
 
     /*--------- Item --------*/
     Route::apiResource('/items', 'ItemController');

@@ -48,6 +48,9 @@ class ItemOrderController extends Controller
         DB::beginTransaction();
         try{
             $input=$request->all();
+            if ($request->tentative_date){
+                $input['tentative_date']=date('Y-m-d',strtotime($request->tentative_date));
+            }
 
             $itemOrder=$this->model->create($input);
 
@@ -56,7 +59,12 @@ class ItemOrderController extends Controller
                 $qtyAndAmount=$this->storeItemOrderDetails($request,$itemOrder->id);
 
                 // update qty and amount on ItemOrder Table
-                $itemOrder->update(['qty'=>$qtyAndAmount['qty'], 'amount'=>$qtyAndAmount['amount']]);
+                $itemOrder->update([
+                    'qty'=>$qtyAndAmount['qty'],
+                    'amount'=>$qtyAndAmount['amount'],
+                    'discount'=>$request->discount,
+                    'total'=>$qtyAndAmount['amount']-$request->discount // After discount from amount
+                ]);
             }
 
             DB::commit();
@@ -71,9 +79,10 @@ class ItemOrderController extends Controller
     public function storeValidationRules($request){
         return [
             'order_no' => 'unique:item_orders,order_no,NULL,id,deleted_at,NULL',
-            'qty'  => "required|numeric|digits_between:1,4",
+            'qty'  => "numeric|digits_between:1,4",
             'amount'  => "required|numeric|digits_between:1,999999",
-            'tentative_date'  => "nullable",
+            'discount'  => "required|numeric|digits_between:1,999999|max:$request->amount",
+            'tentative_date'  => "nullable|date",
             'vendor_id'  => "nullable|exists:vendors,id",
             'status'  => "required|in:0,1",
             "item_id"   => "required|array|min:1",
@@ -100,7 +109,7 @@ class ItemOrderController extends Controller
                 'item_price'=>$request->item_price[$key]?$request->item_price[$key]:0,
                 ];
             $qty+=$request->item_qty[$key]?$request->item_qty[$key]:0;
-            $amount+=$request->item_price[$key]?$request->item_price[$key]:0;
+            $amount+=$request->item_price[$key]?$request->item_price[$key]*$request->item_qty[$key]:0;
         }
         ItemOrderDetail::insert($itemOrderDetails);
         return ['qty'=>$qty,'amount'=>$amount];
@@ -129,7 +138,7 @@ class ItemOrderController extends Controller
     public function show($id)
     {
         try{
-            $itemOrder=$this->model->with('itemOrderDetails')->where('id',$id)->first();
+            $itemOrder=$this->model->with('itemOrderDetails','itemOrderDetails.item')->where('id',$id)->first();
             if ($itemOrder){
                 return $this->respondWithSuccess('Item Order Info',new  ItemOrderResource($itemOrder),Response::HTTP_OK);
             }else{
@@ -178,7 +187,12 @@ class ItemOrderController extends Controller
                 $qtyAndAmount=$this->updateItemOrderDetails($request,$itemOrder->id);
 
                 // update qty and amount on ItemOrder Table
-                $itemOrder->update(['qty'=>$qtyAndAmount['qty'], 'amount'=>$qtyAndAmount['amount']]);
+                $itemOrder->update([
+                    'qty'=>$qtyAndAmount['qty'],
+                    'amount'=>$qtyAndAmount['amount'],
+                    'discount'=>$request->discount,
+                    'total'=>$qtyAndAmount['amount']-$request->discount // After discount from amount
+                ]);
             }
 
             DB::commit();
@@ -203,7 +217,7 @@ class ItemOrderController extends Controller
                 'item_price'=>$request->item_price[$key]?$request->item_price[$key]:0,
             ];
             $qty+=$request->item_qty[$key]?$request->item_qty[$key]:0;
-            $amount+=$request->item_price[$key]?$request->item_price[$key]:0;
+            $amount+=$request->item_price[$key]?$request->item_price[$key]*$request->item_qty[$key]:0;
         }
         ItemOrderDetail::insert($itemOrderDetails);
         return ['qty'=>$qty,'amount'=>$amount];
@@ -212,7 +226,7 @@ class ItemOrderController extends Controller
     public function updateValidationRules($request,$itemOrderId){
         return [
             'order_no' => "required|unique:item_orders,order_no,$itemOrderId,id,deleted_at,NULL",
-            'qty'  => "required|numeric|digits_between:1,4",
+            'qty'  => "numeric|digits_between:1,4",
             'amount'  => "required|numeric|digits_between:1,999999",
             'tentative_date'  => "nullable",
             'vendor_id'  => "nullable|exists:vendors,id",
