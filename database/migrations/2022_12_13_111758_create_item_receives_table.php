@@ -26,6 +26,7 @@ class CreateItemReceivesTable extends Migration
             $table->float('payable_amount',8,1)->default(0);
             $table->float('paid_amount',8,1)->default(0);
             $table->float('due_amount',8,1)->default(0);
+            $table->timestamp('received_date')->useCurrent()->comment('Item Order delivery date');
             $table->string('comments',200)->nullable();
 
             $table->unsignedBigInteger('created_by', false);

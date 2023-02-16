@@ -27,6 +27,7 @@ class ItemOrderResource extends JsonResource
         'vendor_name'=>$this->vendor?$this->vendor->name:'',
         'vendor_mobile'=>$this->vendor?$this->vendor->mobile:'',
         'status'=>$this->status,
+        'order_status'=>$this->order_status,
         'itemOrderDetails'=>ItemOrderDetailsResourceCollection::make($this->whenLoaded('itemOrderDetails')),
     ];
     }

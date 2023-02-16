@@ -33,7 +33,7 @@ class ItemReceiveController extends Controller
     public function index()
     {
         try{
-            $itemReceive=$this->model->with('itemReceiveDetails')->latest()->get();
+            $itemReceive=$this->model->with('itemReceiveDetails','vendor')->latest()->get();
             return $this->respondWithSuccess('All Item Receive list',ItemReceiveResourceCollection::make($itemReceive),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);

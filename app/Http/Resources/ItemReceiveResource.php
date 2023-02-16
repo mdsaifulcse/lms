@@ -20,6 +20,7 @@ class ItemReceiveResource extends JsonResource
             'receive_no'=>$this->receive_no,
             'item_order_id'=>$this->item_order_id,
             'vendor_id'=>$this->vendor_id,
+            'vendor_name'=>$this->vendor?$this->vendor->name:'',
             'qty'=>$this->qty,
             'invoice_no'=>$this->invoice_no,
             'invoice_photo'=>$this->invoice_photo?url($this->invoice_photo):null,
@@ -27,6 +28,7 @@ class ItemReceiveResource extends JsonResource
             'payable_amount'=>$this->payable_amount,
             'paid_amount'=>$this->paid_amount,
             'due_amount'=>$this->due_amount,
+            'received_date'=>$this->received_date,
             'comments'=>$this->comments,
             'itemReceiveDetails'=>ItemReceiveDetailsResourceCollection::make($this->whenLoaded('itemReceiveDetails')),
         ];

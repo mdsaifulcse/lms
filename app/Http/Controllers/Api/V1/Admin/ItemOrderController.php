@@ -25,10 +25,16 @@ class ItemOrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try{
-            $itemOrders=$this->model->with('vendor','itemOrderDetails')->latest()->get();
+            $itemOrders=$this->model->with('vendor','itemOrderDetails')->latest();
+            if ($request->order_status=='unreceived'){
+                $itemOrders=$itemOrders->where(['order_status'=>0]);
+            }elseif($request->order_status=='received'){
+                $itemOrders=$itemOrders->where(['order_status'=>1]);
+            }
+            $itemOrders=$itemOrders->get();
             return $this->respondWithSuccess('All Item list',ItemOrderResourceCollection::make($itemOrders),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);

@@ -26,6 +26,8 @@ class CreateItemOrdersTable extends Migration
             $table->string('note')->nullable();
             $table->tinyInteger('status')->default(\App\Models\ItemOrder::ACTIVE)
                 ->comment('1=Active,0=Inactive');
+            $table->tinyInteger('order_status')->default(\App\Models\ItemOrder::UNRECEIVED)
+                ->comment('1=Received,0=UnReceived');
             $table->unsignedBigInteger('created_by', false);
             $table->unsignedBigInteger('updated_by', false)->nullable();
             $table->foreign('created_by')->references('id')->on('users')->cascadeOnDelete();

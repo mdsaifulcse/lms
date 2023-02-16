@@ -16,10 +16,13 @@ class ItemReceive extends Model
 
     protected $table='item_receives';
     protected $fillable=['receive_no','item_order_id','vendor_id','qty','invoice_no','invoice_photo','payment_status','payable_amount','paid_amount',
-        'due_amount','comments','created_by','updated_by'];
+        'due_amount','received_date','comments','created_by','updated_by'];
 
     public function itemReceiveDetails(){
         return $this->hasMany(ItemReceiveDetail::class,'item_receive_id','id');
+    }
+    public function vendor(){
+        return $this->belongsTo(Vendor::class,'vendor_id','id');
     }
 
     public static function boot(){
