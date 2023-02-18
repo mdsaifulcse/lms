@@ -39,7 +39,7 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->renderable(function (NotFoundHttpException $e, $request) {
-             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_NOT_FOUND);
+             return $this->respondWithError('Something went wrong, Try again later',$e->getStatusCode(),Response::HTTP_NOT_FOUND);
         });
 
         $this->reportable(function (Throwable $e) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ItemOrderResource;
 use App\Http\Resources\ItemReceiveDetailsResource;
 use App\Http\Resources\ItemReceiveResource;
 use App\Http\Resources\ItemReceiveResourceCollection;
@@ -40,6 +41,20 @@ class ItemReceiveController extends Controller
         }
     }
 
+    public function unReceivedOrderByOrderId($id)
+    {
+        try{
+            $itemOrder=ItemOrder::with('itemOrderDetails','itemOrderDetails.item')->where(['id'=>$id,'order_status'=>ItemOrder::UNRECEIVED])->first();
+            if ($itemOrder){
+                return $this->respondWithSuccess('Unreceived Item Order Info',new  ItemOrderResource($itemOrder),Response::HTTP_OK);
+            }else{
+                return $this->respondWithError('No data found',[],Response::HTTP_NOT_FOUND);
+            }
+        }catch(\Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
     /**
@@ -72,6 +87,8 @@ class ItemReceiveController extends Controller
             }
             $itemReceive=$this->model->create($input);
 
+            // Update order_status of ItemOrder
+            $itemOrder=ItemOrder::find($request->item_order_id)->update(['order_status'=>ItemOrder::RECEIVED]);
             // Store Item Order Details and calculate payment status, payable amount-----------
             if (count($request->item_id)>0){
                 $this->storeItemReceiveDetails($request,$itemReceive->id);
@@ -97,7 +114,7 @@ class ItemReceiveController extends Controller
             'receive_no' => 'unique:item_receives,receive_no,NULL,id,deleted_at,NULL',
             'item_order_id'  => "required|exists:item_orders,id",
             'vendor_id'  => "required|exists:vendors,id",
-            'qty'  => "required|numeric|digits_between:1,4",
+            'qty'  => "numeric|digits_between:1,4",
             'paid_amount'  => "numeric|digits_between:1,7",
             'comments'  => "nullable|max:200",
 

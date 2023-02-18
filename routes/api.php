@@ -74,6 +74,8 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
     /*--------- Item receive--------*/
     Route::apiResource('/item-received', 'ItemReceiveController');
     Route::get('/item-received-no', 'ItemReceiveController@generateItemReceiveNo');
+    Route::get('/unreceivedOrderByOrderId/{orderId}', 'ItemReceiveController@unReceivedOrderByOrderId');
+
     /*--------- Item Order--------*/
     Route::apiResource('/item-orders', 'ItemOrderController');
     Route::get('/item-order-no', 'ItemOrderController@generateOrderInvoiceNo');
