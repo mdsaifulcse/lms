@@ -11,5 +11,10 @@ class ItemReceiveDetail extends Model
     use HasFactory,SoftDeletes;
 
     protected $table='item_receive_details';
-    protected $fillable=['item_receive_id','item_id','item_qty'];
+    protected $fillable=['item_receive_id','item_id','item_qty','item_price'];
+
+    public function item(){
+        return $this->belongsTo(Item::class,'item_id','id');
+    }
+
 }

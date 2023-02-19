@@ -79,8 +79,14 @@ class ItemReceiveController extends Controller
 
         DB::beginTransaction();
         try{
-            $input=$request->all();
+            // Check ItemOrder Already received/not -------------------------
+            $itemOrder=ItemOrder::find($request->item_order_id);
 
+            if ($itemOrder->order_status==ItemOrder::RECEIVED){
+                return $this->respondWithError('Order Already Received',[],Response::HTTP_CONFLICT);
+            }
+
+            $input=$request->all();
             // upload invoice photo --------------------
             if ($request->hasFile('invoice_photo')){
                 $input['photo']=\MyHelper::photoUpload($request->file('invoice_photo'),'images/invoice-photo',150);
@@ -88,7 +94,7 @@ class ItemReceiveController extends Controller
             $itemReceive=$this->model->create($input);
 
             // Update order_status of ItemOrder
-            $itemOrder=ItemOrder::find($request->item_order_id)->update(['order_status'=>ItemOrder::RECEIVED]);
+            $itemOrder->update(['order_status'=>ItemOrder::RECEIVED]);
             // Store Item Order Details and calculate payment status, payable amount-----------
             if (count($request->item_id)>0){
                 $this->storeItemReceiveDetails($request,$itemReceive->id);
@@ -102,7 +108,7 @@ class ItemReceiveController extends Controller
             DB::commit();
             return $this->respondWithSuccess('Item Receive Info has been created successful',new  ItemReceiveResource($itemReceive),Response::HTTP_OK);
 
-        }catch(Exception $e){
+        }catch(\Exception $e){
             DB::rollback();
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -133,20 +139,22 @@ class ItemReceiveController extends Controller
         $qty=0;
         $totalAmount=0;
         foreach ($request->item_id as $key=>$itemId){
-            $itemReceiveDetail[]=[
-                'item_receive_id'=>$itemReceiveId,
-                'item_id'=>$request->item_id[$key],
-                'item_qty'=>$request->item_qty[$key]?$request->item_qty[$key]:0,
-            ];
-
-            $qty+=$request->item_qty[$key]?$request->item_qty[$key]:0;
-
             // get Item price when order placed ---------
             $itemOrderDetail=ItemOrderDetail::select('item_price')->where(['item_order_id'=>$request->item_order_id,'item_id'=>$request->item_id[$key]])
                 ->first();
+            $itemQty=$request->item_qty[$key]?$request->item_qty[$key]:0;
+            $itemPrice=$itemOrderDetail->item_price?$itemOrderDetail->item_price:0;
+            $itemReceiveDetail[]=[
+                'item_receive_id'=>$itemReceiveId,
+                'item_id'=>$request->item_id[$key],
+                'item_qty'=>$itemQty,
+                'item_price'=>$itemPrice,
+                'created_at'=>date('Y--m-d'),
+            ];
 
+            $qty+=$itemQty;
             // Calculate Item Total Amount ----
-            $totalAmount+=$itemOrderDetail->item_price?$itemOrderDetail->item_price:0;
+            $totalAmount+=$itemPrice*$itemQty;
         }
         ItemReceiveDetail::insert($itemReceiveDetail);
 
@@ -169,14 +177,17 @@ class ItemReceiveController extends Controller
             'payment_status'=>$paymentStatus,
         ]);
 
-        //----- Create Vendor payment -------------------------
-        VendorPayment::create([
-            'vendor_payment_no'=>$this->generateVendorPaymentNo(),
-            'vendor_id'=>$request->vendor_id,
-            'item_receive_id'=>$itemReceiveId,
-            'paid_amount'=>$request->paid_amount,
-            'total_last_due_amount'=>$dueAmount,
-        ]);
+        //----- Create Vendor payment if Paid Amount greater than 0 -------------------------
+        if ($request->has('paid_amount') && $request->paid_amount>0){
+            VendorPayment::create([
+                'vendor_payment_no'=>$this->generateVendorPaymentNo(),
+                'vendor_id'=>$request->vendor_id,
+                'item_receive_id'=>$itemReceiveId,
+                'paid_amount'=>$request->paid_amount,
+                'total_last_due_amount'=>$dueAmount,
+            ]);
+        }
+
 
     }
 
@@ -230,7 +241,7 @@ class ItemReceiveController extends Controller
      */
     public function show($id)
     {
-         $itemReceive=$this->model->with('itemReceiveDetails')->find($id);
+         $itemReceive=$this->model->with('itemReceiveDetails','itemReceiveDetails.item')->find($id);
         try{
             if ($itemReceive){
                 return $this->respondWithSuccess('Item Receive Info',new  ItemReceiveResource($itemReceive),Response::HTTP_OK);

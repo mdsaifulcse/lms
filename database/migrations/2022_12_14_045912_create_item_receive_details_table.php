@@ -18,6 +18,7 @@ class CreateItemReceiveDetailsTable extends Migration
             $table->foreignId('item_receive_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('item_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->tinyInteger('item_qty',false,3)->default(0);
+            $table->integer('item_price',false,6)->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

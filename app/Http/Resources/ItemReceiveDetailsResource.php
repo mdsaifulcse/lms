@@ -16,8 +16,11 @@ class ItemReceiveDetailsResource extends JsonResource
     {
         return [
             'id'=>$this->id,
-            'item_id'=>$this->item_id,
-            'item_qty'=>$this->item_qty,
+            'name'=>$this->item->title,
+            'itemId'=>$this->item_id,
+            'itemQty'=>$this->item_qty,
+            'itemPrice'=>$this->item_price,
+            'itemTotalPrice'=>$this->item_price*$this->item_qty,
         ];
     }
 }

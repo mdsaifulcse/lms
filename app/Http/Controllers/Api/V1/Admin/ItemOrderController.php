@@ -108,14 +108,17 @@ class ItemOrderController extends Controller
         $qty=0;
         $amount=0;
         foreach ($request->item_id as $key=>$itemId){
+
+            $itemQty=$request->item_qty[$key]?$request->item_qty[$key]:0;
+            $itemPrice=$request->item_price[$key]?$request->item_price[$key]:0;
             $itemOrderDetails[]=[
                 'item_order_id'=>$itemOrderId,
                 'item_id'=>$request->item_id[$key],
-                'item_qty'=>$request->item_qty[$key]?$request->item_qty[$key]:0,
-                'item_price'=>$request->item_price[$key]?$request->item_price[$key]:0,
+                'item_qty'=>$itemQty,
+                'item_price'=>$itemPrice,
                 ];
             $qty+=$request->item_qty[$key]?$request->item_qty[$key]:0;
-            $amount+=$request->item_price[$key]?$request->item_price[$key]*$request->item_qty[$key]:0;
+            $amount+=$itemPrice*$itemQty;
         }
         ItemOrderDetail::insert($itemOrderDetails);
         return ['qty'=>$qty,'amount'=>$amount];
@@ -259,11 +262,16 @@ class ItemOrderController extends Controller
     public function destroy(ItemOrder $itemOrder)
     {
         try{
+             $itemOrder->load('orderReceived');
             if (!$itemOrder){
                 return $this->respondWithError('No data found',[],Response::HTTP_NOT_FOUND);
             }
+            if (count($itemOrder->orderReceived)>0){
+                return $this->respondWithError('You can not delete,cause order of already has been Received',[],Response::HTTP_BAD_REQUEST);
+            }
 
             $itemOrder->load('itemOrderDetails');
+            ;
             $itemOrder->itemOrderDetails()->delete();
             $itemOrder->delete();
 

@@ -27,6 +27,10 @@ class ItemOrder extends Model
     public function itemOrderDetails(){
         return $this->hasMany(ItemOrderDetail::class,'item_order_id','id');
     }
+    public function orderReceived(){
+        return $this->hasMany(ItemReceive::class,'item_order_id','id');
+    }
+
 
 
     public static function boot(){
