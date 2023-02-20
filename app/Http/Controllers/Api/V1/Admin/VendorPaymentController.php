@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ItemReceiveResource;
 use App\Http\Resources\VendorPaymentResource;
 use App\Http\Resources\VendorPaymentResourceCollection;
 use App\Http\Traits\ApiResponseTrait;
@@ -25,10 +26,16 @@ class VendorPaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+
+    public function index(Request $request)
     {
         try{
-            $vendorPayments=$this->model->with('vendor')->get();
+            $vendorPayments=$this->model->with('vendor','itemReceive');
+            if ($request->has('dd')&& $request->dd!='null'){
+                $vendorPayments=$vendorPayments->where(['vendor_id'=>1]);
+            }
+            $vendorPayments=$vendorPayments->latest()->get();
+
             return $this->respondWithSuccess('Vendor payment list',VendorPaymentResourceCollection::make($vendorPayments),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -40,9 +47,18 @@ class VendorPaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function payableReceivedOrderByReceivedId($receivedId)
     {
-        //
+        try{
+            $itemReceived=ItemReceive::where(['id'=>$receivedId])->whereNotIn('payment_status',[ItemReceive::PAID])->first();
+            if ($itemReceived){
+                return $this->respondWithSuccess('Payable Order Receive Info',new  ItemReceiveResource($itemReceived),Response::HTTP_OK);
+            }else{
+                return $this->respondWithError('No data found',[],Response::HTTP_NOT_FOUND);
+            }
+        }catch(\Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -87,13 +103,20 @@ class VendorPaymentController extends Controller
                 'payment_status'=>$paymentStatus
             ]);
 
+            // Generate Received Date ----
+            if ($request->payment_date){
+                $paymentDate=date('Y-m-d',strtotime($request->payment_date));
+            }else{
+                $paymentDate=date('Y-m-d');
+            }
             // Vendor Payment ----------------------------------------
             $vendorPayment=$this->model->create([
                 'vendor_payment_no'=>$request->vendor_payment_no,
                 'item_receive_id'=>$request->item_receive_id,
-                'vendor_id'=>$request->vendor_id,
+                'vendor_id'=>$itemReceiveData->vendor_id,
                 'paid_amount'=>$request->paid_amount,
                 'total_last_due_amount'=>$totalLastDueAmount,
+                'payment_date'=>$paymentDate,
                 'comments'=>$request->comments,
             ]);
 
@@ -103,7 +126,7 @@ class VendorPaymentController extends Controller
 //                $vendorPayment=$this->model->create([
 //                    'vendor_payment_no'=>$request->vendor_payment_no,
 //                    'item_receive_id'=>$request->item_receive_id,
-//                    'vendor_id'=>$request->vendor_id,
+//                    'vendor_id'=>$itemReceiveData->vendor_id,
 //                    'paid_amount'=>$request->paid_amount,
 //                    'total_last_due_amount'=>$totalLastDueAmount,
 //                ]);
@@ -130,7 +153,6 @@ class VendorPaymentController extends Controller
         return [
             'vendor_payment_no' => 'unique:vendor_payments,vendor_payment_no,NULL,id,deleted_at,NULL',
             'item_receive_id'  => "required|exists:item_receives,id",
-            'vendor_id'  => "required|exists:vendors,id",
             'paid_amount'=>"required|numeric|digits_between:1,9",
             'comments'=>"nullable|max:145",
         ];

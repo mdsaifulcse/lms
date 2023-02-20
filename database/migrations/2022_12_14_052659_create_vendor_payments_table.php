@@ -20,6 +20,10 @@ class CreateVendorPaymentsTable extends Migration
             $table->foreignId('vendor_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->float('paid_amount',false,8,1)->default(0);
             $table->float('due_amount',false,8,1)->default(0);
+            $table->tinyInteger('payment_through',false,1)->default(\App\Models\VendorPayment::CASH
+            )->comment('1=Cash,2=Bank,3=Check');
+            $table->string('payment_photo',255)->nullable();
+            $table->timestamp('payment_date')->useCurrent()->comment('Vendor payment date');
             $table->string('comments',150)->nullable();
 
             $table->unsignedBigInteger('created_by', false);

@@ -31,10 +31,15 @@ class ItemReceiveController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try{
-            $itemReceive=$this->model->with('itemReceiveDetails','vendor')->latest()->get();
+            $itemReceive=$this->model->with('itemReceiveDetails','vendor')->latest();
+            if ($request->has('paymentStatus')&& $request->paymentStatus!='null'){
+                $itemReceive=$itemReceive->where(['payment_status'=>$request->paymentStatus]);
+            }
+
+            $itemReceive=$itemReceive->get();
             return $this->respondWithSuccess('All Item Receive list',ItemReceiveResourceCollection::make($itemReceive),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -91,6 +96,11 @@ class ItemReceiveController extends Controller
             if ($request->hasFile('invoice_photo')){
                 $input['photo']=\MyHelper::photoUpload($request->file('invoice_photo'),'images/invoice-photo',150);
             }
+
+            // Generate Received Date ----
+            if ($request->received_date){
+                $input['received_date']=date('Y-m-d',strtotime($request->received_date));
+            }
             $itemReceive=$this->model->create($input);
 
             // Update order_status of ItemOrder
@@ -119,6 +129,7 @@ class ItemReceiveController extends Controller
         return [
             'receive_no' => 'unique:item_receives,receive_no,NULL,id,deleted_at,NULL',
             'item_order_id'  => "required|exists:item_orders,id",
+            'received_date'  => "required|date",
             'vendor_id'  => "required|exists:vendors,id",
             'qty'  => "numeric|digits_between:1,4",
             'paid_amount'  => "numeric|digits_between:1,7",

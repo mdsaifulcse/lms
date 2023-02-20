@@ -14,6 +14,6 @@ class VendorPaymentResourceCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return $this->collection;
+        return ['vendorPayments'=>$this->collection];
     }
 }

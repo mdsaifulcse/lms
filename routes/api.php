@@ -70,15 +70,17 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
 
     /*--------- Vendor Payment--------*/
     Route::apiResource('/vendor-payments', 'VendorPaymentController');
+    Route::get('/vendor-payment-num', 'VendorPaymentController@generateVendorPaymentNo');
+    Route::get('/payableReceivedOrderByReceivedId/{receivedId}', 'VendorPaymentController@payableReceivedOrderByReceivedId');
 
     /*--------- Item receive--------*/
     Route::apiResource('/item-received', 'ItemReceiveController');
-    Route::get('/item-received-no', 'ItemReceiveController@generateItemReceiveNo');
+    Route::get('/item-received-num', 'ItemReceiveController@generateItemReceiveNo');
     Route::get('/unreceivedOrderByOrderId/{orderId}', 'ItemReceiveController@unReceivedOrderByOrderId');
 
     /*--------- Item Order--------*/
     Route::apiResource('/item-orders', 'ItemOrderController');
-    Route::get('/item-order-no', 'ItemOrderController@generateOrderInvoiceNo');
+    Route::get('/item-order-num', 'ItemOrderController@generateOrderInvoiceNo');
 
     /*--------- Item --------*/
     Route::apiResource('/items', 'ItemController');

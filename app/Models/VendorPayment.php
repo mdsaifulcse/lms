@@ -11,9 +11,12 @@ class VendorPayment extends Model
     use HasFactory,SoftDeletes;
 
     const PAYMENTNOLENGTH=6;
+    const CASH=1;
+    const BANK=2;
+    const CHECK=3;
 
     protected $table='vendor_payments';
-    protected $fillable=['vendor_payment_no','item_receive_id','vendor_id','paid_amount','total_last_due_amount','comments','created_by','updated_by'];
+    protected $fillable=['vendor_payment_no','item_receive_id','vendor_id','paid_amount','total_last_due_amount','payment_date','payment_photo','payment_through','comments','created_by','updated_by'];
 
     public function vendor(){
         return $this->belongsTo(Vendor::class,'vendor_id','id');
