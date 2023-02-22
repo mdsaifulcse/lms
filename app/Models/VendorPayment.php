@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class VendorPayment extends Model
 {
     use HasFactory,SoftDeletes;
-
     const PAYMENTNOLENGTH=6;
     const CASH=1;
     const BANK=2;

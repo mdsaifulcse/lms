@@ -71,6 +71,7 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
     /*--------- Vendor Payment--------*/
     Route::apiResource('/vendor-payments', 'VendorPaymentController');
     Route::get('/vendor-payment-num', 'VendorPaymentController@generateVendorPaymentNo');
+    Route::get('/vendorPaymentsByReceivedId/{receivedId}', 'VendorPaymentController@vendorPaymentsByReceivedId');
     Route::get('/payableReceivedOrderByReceivedId/{receivedId}', 'VendorPaymentController@payableReceivedOrderByReceivedId');
 
     /*--------- Item receive--------*/

@@ -31,12 +31,26 @@ class VendorPaymentController extends Controller
     {
         try{
             $vendorPayments=$this->model->with('vendor','itemReceive');
-            if ($request->has('dd')&& $request->dd!='null'){
-                $vendorPayments=$vendorPayments->where(['vendor_id'=>1]);
+            if ($request->has('item_receive_id')&& $request->item_receive_id!='null'){
+                $vendorPayments=$vendorPayments->where(['item_receive_id'=>$request->item_receive_id]);
             }
             $vendorPayments=$vendorPayments->latest()->get();
 
             return $this->respondWithSuccess('Vendor payment list',VendorPaymentResourceCollection::make($vendorPayments),Response::HTTP_OK);
+        }catch(\Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function vendorPaymentsByReceivedId($receivedId)
+    {
+        $itemReceive=ItemReceive::with('itemReceivePayments')->find($receivedId);
+        try{
+            if ($itemReceive){
+                return $this->respondWithSuccess('Vendor payment info',new  ItemReceiveResource($itemReceive),Response::HTTP_OK);
+            }else{
+                return $this->respondWithError('Vendor payment info data found',[],Response::HTTP_NOT_FOUND);
+            }
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }

@@ -21,8 +21,14 @@ class ItemReceive extends Model
     public function itemReceiveDetails(){
         return $this->hasMany(ItemReceiveDetail::class,'item_receive_id','id');
     }
+    public function itemReceivePayments(){
+        return $this->hasMany(VendorPayment::class,'item_receive_id','id')->oldest();
+    }
     public function vendor(){
         return $this->belongsTo(Vendor::class,'vendor_id','id');
+    }
+    public function itemOrder(){
+        return $this->belongsTo(ItemOrder::class,'item_order_id','id');
     }
 
     public static function boot(){

@@ -19,6 +19,7 @@ class ItemReceiveResource extends JsonResource
             'id'=>$this->id,
             'receive_no'=>$this->receive_no,
             'item_order_id'=>$this->item_order_id,
+            'order_discount'=>$this->itemOrder?$this->itemOrder->discount:0,
             'vendor_id'=>$this->vendor_id,
             'vendor_name'=>$this->vendor?$this->vendor->name:'',
             'qty'=>$this->qty,
@@ -31,6 +32,7 @@ class ItemReceiveResource extends JsonResource
             'received_date'=>$this->received_date,
             'comments'=>$this->comments,
             'itemReceiveDetails'=>ItemReceiveDetailsResourceCollection::make($this->whenLoaded('itemReceiveDetails')),
+            'itemReceivePayments'=>VendorPaymentResourceCollection::make($this->whenLoaded('itemReceivePayments')),
         ];
     }
 }

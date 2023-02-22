@@ -16,6 +16,7 @@ class VendorPaymentResource extends JsonResource
     {
         return [
             'id'=>$this->id,
+            'itemReceiveId'=>$this->item_receive_id,
             'vendor_payment_no'=>$this->vendor_payment_no,
             'vendor_name'=>$this->vendor->name,
             'vendor_mobile'=>$this->vendor->mobile,

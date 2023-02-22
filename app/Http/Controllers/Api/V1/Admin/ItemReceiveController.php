@@ -34,7 +34,7 @@ class ItemReceiveController extends Controller
     public function index(Request $request)
     {
         try{
-            $itemReceive=$this->model->with('itemReceiveDetails','vendor')->latest();
+            $itemReceive=$this->model->with('itemOrder','itemReceiveDetails','vendor','itemReceivePayments')->latest();
             if ($request->has('paymentStatus')&& $request->paymentStatus!='null'){
                 $itemReceive=$itemReceive->where(['payment_status'=>$request->paymentStatus]);
             }
@@ -59,8 +59,6 @@ class ItemReceiveController extends Controller
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-
 
     /**
      * Store a newly created resource in storage.
@@ -149,6 +147,7 @@ class ItemReceiveController extends Controller
     public function storeItemReceiveDetails($request,$itemReceiveId){
         $qty=0;
         $totalAmount=0;
+        $itemOrder=ItemOrder::find($request->item_order_id);
         foreach ($request->item_id as $key=>$itemId){
             // get Item price when order placed ---------
             $itemOrderDetail=ItemOrderDetail::select('item_price')->where(['item_order_id'=>$request->item_order_id,'item_id'=>$request->item_id[$key]])
@@ -167,6 +166,8 @@ class ItemReceiveController extends Controller
             // Calculate Item Total Amount ----
             $totalAmount+=$itemPrice*$itemQty;
         }
+        // deduct discount
+        $totalAmount=$totalAmount-$itemOrder->discount;
         ItemReceiveDetail::insert($itemReceiveDetail);
 
         // --------- Calculate Payment Status, due Amount ---------
@@ -206,7 +207,7 @@ class ItemReceiveController extends Controller
 
         foreach ($request->item_id as $key=>$itemId){
 
-            $itemInventoryStock=ItemInventoryStock::where(['id'=>$itemId])->first();
+            $itemInventoryStock=ItemInventoryStock::where(['item_id'=>$itemId])->first();
             $qty=$request->item_qty[$key]?$request->item_qty[$key]:0;
 
             // Update Item Qty with previous qty
@@ -252,14 +253,14 @@ class ItemReceiveController extends Controller
      */
     public function show($id)
     {
-         $itemReceive=$this->model->with('itemReceiveDetails','itemReceiveDetails.item')->find($id);
+         $itemReceive=$this->model->with('itemReceiveDetails','itemReceiveDetails.item','itemReceivePayments')->find($id);
         try{
             if ($itemReceive){
                 return $this->respondWithSuccess('Item Receive Info',new  ItemReceiveResource($itemReceive),Response::HTTP_OK);
             }else{
                 return $this->respondWithError('No item receive data found',[],Response::HTTP_NOT_FOUND);
             }
-        }catch(\Exception $e){
+        }catch(Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
