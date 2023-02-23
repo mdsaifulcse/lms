@@ -47,6 +47,10 @@ class Item extends Model
     public function itemThumbnails(){
         return $this->hasMany(ItemThumbnail::class,'item_id','id')->orderBy('id','DESC');
     }
+    public function itemInventory(){
+        return $this->hasOne(ItemInventoryStock::class,'item_id','id')
+            ->orderBy('id','DESC');
+    }
 
     public static function boot(){
         parent::boot();

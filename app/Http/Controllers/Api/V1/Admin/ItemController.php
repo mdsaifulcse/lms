@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Models\ItemAuthor;
 use App\Models\ItemThumbnail;
 use Illuminate\Http\Request;
+use PhpParser\Builder;
 use Symfony\Component\HttpFoundation\Response;
 use DB,Hash,Validator,Auth;
 
@@ -29,8 +30,25 @@ class ItemController extends Controller
     public function index()
     {
         try{
-            $items=$this->model->with('country','publisher','language','itemAuthors','itemThumbnails')->latest('sequence','DESC')->get();
+            $items=$this->model->with('country','publisher',
+                'language','relItemAuthorsName','itemThumbnails')
+                ->latest('sequence','DESC')->get();
+
             return $this->respondWithSuccess('All Item list',ItemResourceCollection::make($items),Response::HTTP_OK);
+        }catch(Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function itemsInventoryStock()
+    {
+        try{
+            $items=$this->model->with('language','itemInventory')
+               ->select('item_inventory_stocks.qty','items.*')
+                ->join('item_inventory_stocks','items.id','item_inventory_stocks.item_id')
+                ->latest('sequence','DESC')->get();
+
+            return $this->respondWithSuccess('All Item Qty   list',ItemResourceCollection::make($items),Response::HTTP_OK);
         }catch(Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }

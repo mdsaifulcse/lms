@@ -16,6 +16,7 @@ class ItemResource extends JsonResource
     {
         return [
             'id'=>$this->id,
+            'itemQty'=>$this->whenLoaded('itemInventory'),
             'title'=>$this->title,
             'isbn'=>$this->isbn,
             'edition'=>$this->edition,
@@ -40,7 +41,7 @@ class ItemResource extends JsonResource
             'sequence'=>$this->sequence,
             'brochure'=>$this->brochure?url($this->brochure):'',
             //'itemAuthors'=>ItemAuthorResourceCollection::make($this->whenLoaded('itemAuthors')),
-            'relItemAuthorsName'=>$this->relItemAuthorsName,
+            'relItemAuthorsName'=>$this->whenLoaded('relItemAuthorsName'), // $this->relItemAuthorsName,
             'itemThumbnails'=>ItemThumbnailResourceCollection::make($this->whenLoaded('itemThumbnails')),
         ];
     }

@@ -85,6 +85,7 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
 
     /*--------- Item --------*/
     Route::apiResource('/items', 'ItemController');
+    Route::get('/items-inventory-stock', 'ItemController@itemsInventoryStock');
     Route::get('/item-max-sequence', 'ItemController@getMaxSequence');
 
     /* -------- Item Prerequisite  ------- */
