@@ -14,6 +14,6 @@ class UserMembershipPlanResourceCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return $this->collection;
+        return ['userPlans'=>$this->collection];
     }
 }

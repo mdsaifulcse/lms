@@ -24,6 +24,22 @@ class CommonDataLoadController extends Controller
         }
     }
 
+    public function activeGeneralUserListList(){
+        try{
+            $generalUsers=DataLoad::generalUserList();
+            return $this->respondWithSuccess('Active General User List',$generalUsers,Response::HTTP_OK);
+        }catch(\Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }  public function activeMembershipPlanList(){
+        try{
+            $membershipPlans=DataLoad::membershipPlanList();
+            return $this->respondWithSuccess('Active Membership Plan list',$membershipPlans,Response::HTTP_OK);
+        }catch(\Exception $e){
+            return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function activeVendorsList(){
         try{
             $categories=DataLoad::vendorList();

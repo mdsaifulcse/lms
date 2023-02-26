@@ -28,7 +28,7 @@ class UserMembershipController extends Controller
     public function index()
     {
         try{
-            $userMemberships=$this->model->with('user')->get();
+            $userMemberships=$this->model->with('user')->latest()->get();
             return $this->respondWithSuccess('All User Membership Plan list',UserMembershipPlanResourceCollection::make($userMemberships),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);

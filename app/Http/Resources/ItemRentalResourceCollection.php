@@ -14,6 +14,6 @@ class ItemRentalResourceCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return $this->collection;
+        return ['itemRentals'=>$this->collection];
     }
 }

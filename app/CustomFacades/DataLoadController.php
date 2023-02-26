@@ -22,6 +22,8 @@ use App\Models\IncomeExpenseSubHead;
 use App\Models\Item;
 use App\Models\Language;
 use App\Models\LengthUnit;
+use App\Models\Membership;
+use App\Models\MembershipPlan;
 use App\Models\OrderAssignDelivery;
 use App\Models\Origin;
 use App\Models\PackSizeUnit;
@@ -49,34 +51,16 @@ class DataLoadController
         }
     }
 
-    public function collectionList()
+    public function membershipPlanList()
     {
-       return Collection::orderBy('sequence','ASC')->where('status',Collection::ACTIVE)->pluck('collection','id');
+        return MembershipPlan::orderBy('sequence','ASC')->where('status',MembershipPlan::ACTIVE)->get(['name','id']);
     }
 
-    public function tagList()
+    public function generalUserList()
     {
-       return Tag::orderBy('sequence','ASC')->where('status',Tag::ACTIVE)->pluck('tag','id');
+        return User::orderBy('id','ASC')->where(['user_role'=>User::GENERALUSER,'status'=>User::APPROVED])->get(['name','id']);
     }
 
-    public function packSizeUnitList()
-    {
-       return PackSizeUnit::orderBy('sequence','ASC')->where('status',PackSizeUnit::ACTIVE)->pluck('size','id');
-    }
-    public function originList()
-    {
-       return Origin::orderBy('sequence','ASC')->where('status',Origin::ACTIVE)->pluck('origin','id');
-    }
-
-    public function vatTaxList()
-    {
-       return VatTax::orderBy('sequence','ASC')->where('status',VatTax::ACTIVE)->pluck('vat_tax_name','id');
-    }
-
-    public function brandList()
-    {
-       return Brand::orderBy('sequence','ASC')->where('status',Brand::ACTIVE)->pluck('brand_name','id');
-    }
     public function countryList()
     {
         return Country::orderBy('sequence','ASC')->where('status',Country::ACTIVE)->get(['name','id']);
@@ -132,40 +116,6 @@ class DataLoadController
         }
     }
 
-    public function fourthSubCatList($thirdSubCategoryId=null)
-    {
-        if ($thirdSubCategoryId!=null)
-        {
-            return FourthSubCategory::orderBy('sequence','ASC')->where(['third_sub_category_id'=>$thirdSubCategoryId,'status'=>SubCategory::ACTIVE])->pluck('fourth_sub_category','id');
-
-        }else{
-
-            return FourthSubCategory::orderBy('sequence','ASC')->where(['status'=>SubCategory::ACTIVE])->pluck('fourth_sub_category','id');
-        }
-    }
-
-
-
-    public function weightUnitList()
-    {
-        return WeightUnit::orderBy('sequence','ASC')->where('status',WeightUnit::ACTIVE)->pluck('weight_unit','id');
-    }
-
-    public function lengthUnitList()
-    {
-        return LengthUnit::orderBy('sequence','ASC')->where('status',LengthUnit::ACTIVE)->pluck('length_unit','id');
-    }
-
-    public function purchaseNoList($vendorId=null)
-    {
-        if ($vendorId!=null)
-        {
-            return ProductPurchase::orderBy('id','DESC')->where(['vendor_id'=>$vendorId])->pluck('purchase_no','id')->toArray();
-        }else{
-            return ProductPurchase::orderBy('id','DESC')->pluck('purchase_no ','id')->toArray();
-        }
-    }
-
     public function loadPurchaseNumbersByVendor($vendorId)
     {
         $purchaseNoList= $this->purchaseNoList($vendorId);
@@ -180,28 +130,6 @@ class DataLoadController
         // return response()->json($totalDueRemaining);
     }
 
-    public function bankAccountList()
-    {
-       return BankAccount::select(
-           DB::raw("CONCAT(account_number,' - ',account_title) AS account_name"),'id')->orderBy('sequence','ASC')
-           ->where('status',BankAccount::ACTIVE)->pluck('account_name','id');
-    }
-
-    public function divisionList()
-    {
-       return Division::orderBy('sequence','ASC')->where('status',Division::ACTIVE)->pluck('division','id');
-    }
-
-    public function districtList($divisionId=null)
-    {
-        if ($divisionId!=null)
-        {
-            return District::orderBy('sequence','ASC')->where(['division_id'=>$divisionId,'status'=>District::ACTIVE])->pluck('district','id');
-        }else{
-            return District::orderBy('sequence','ASC')->where(['status'=>District::ACTIVE])->pluck('district','id');
-        }
-
-    }
 
     public function loadSubCatsByCat($categoryId)
     {
@@ -226,48 +154,10 @@ class DataLoadController
        return Setting::first();
     }
 
-
-    public function incomeExpenseList($headType=null)
-    {
-        if ($headType!=null)
-        {
-            return IncomeExpenseHead::orderBy('sequence','ASC')->where(['head_type'=>$headType,'status'=>IncomeExpenseHead::ACTIVE])->pluck('head_title','id');
-        }else{
-            return IncomeExpenseHead::orderBy('sequence','ASC')->where(['status'=>IncomeExpenseHead::ACTIVE])->pluck('head_title','id');
-        }
-    }
-
-    public function incomeExpenseSubHeads($headId=null)
-    {
-        if ($headId!=null)
-        {
-           return IncomeExpenseSubHead::orderBy('sequence','ASC')
-                ->where(['income_expense_head_id'=>$headId,'status'=>IncomeExpenseSubHead::ACTIVE])->pluck('sub_head_title','id');
-        }else{
-           return IncomeExpenseSubHead::orderBy('sequence','ASC')
-                ->where(['status'=>IncomeExpenseSubHead::ACTIVE])->pluck('sub_head_title','id');
-        }
-    }
-
-
     public function loadSubHeadsByHeadId($headId)
     {
         $subHeads=$this->incomeExpenseSubHeads($headId);
 
         return view('include.load-subhead',compact('subHeads'));
     }
-
-    public function deliveryStatus()
-    {
-        return [
-            OrderAssignDelivery::PENDING=>OrderAssignDelivery::PENDING,
-            OrderAssignDelivery::CANCELLED=>OrderAssignDelivery::CANCELLED,
-            OrderAssignDelivery::RECEIVED=>OrderAssignDelivery::RECEIVED,
-            OrderAssignDelivery::SHIPPING=>OrderAssignDelivery::SHIPPING,
-            OrderAssignDelivery::COMPLETE=>OrderAssignDelivery::COMPLETE,
-        ];
-    }
-
-
-
 }

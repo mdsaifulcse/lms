@@ -61,6 +61,8 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
     Route::get('/active-publisher-list', 'CommonDataLoadController@activePublisherList');
     Route::get('/active-vendors-list', 'CommonDataLoadController@activeVendorsList');
     Route::get('/active-item-search', 'CommonDataLoadController@activeItemSearch');
+    Route::get('/active-membership-plan', 'CommonDataLoadController@activeMembershipPlanList');
+    Route::get('/active-general-users', 'CommonDataLoadController@activeGeneralUserListList');
 
     /*--------- Item Return --------*/
     Route::apiResource('/item-returns', 'ItemReturnController');
