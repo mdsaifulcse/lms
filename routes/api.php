@@ -69,6 +69,7 @@ Route::group(['namespace'=>'App\Http\Controllers\Api\V1\Admin','middleware' => [
 
     /*--------- Item Rental --------*/
     Route::apiResource('/item-rentals', 'ItemRentalController');
+    Route::get('/item-rental-num', 'ItemRentalController@generateItemRentalNo');
 
     /*--------- Vendor Payment--------*/
     Route::apiResource('/vendor-payments', 'VendorPaymentController');

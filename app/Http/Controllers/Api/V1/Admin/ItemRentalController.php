@@ -76,7 +76,6 @@ class ItemRentalController extends Controller
             'user_id'  => "nullable|exists:users,id",
             "item_id"   => "required|array|min:1",
             'item_id.*' => "exists:items,id",
-
             "item_qty"   => "required|array|min:1",
             'item_qty.*' => "digits_between:1,4",
         ];
@@ -94,7 +93,7 @@ class ItemRentalController extends Controller
                 'item_rental_id'=>$itemRentalId,
                 'item_id'=>$request->item_id[$key],
                 'item_qty'=>$request->item_qty[$key]?$request->item_qty[$key]:0,
-                'return_date'=>$request->return_date?date('Y-m-d',strtotime($request->return_date)):null,
+                'return_date'=>$request->item_return_date[$key]?date('Y-m-d',strtotime($request->item_return_date[$key])):null,
             ];
             $qty+=$request->item_qty[$key]?$request->item_qty[$key]:0;
         }

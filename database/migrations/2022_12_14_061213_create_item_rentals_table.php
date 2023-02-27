@@ -25,6 +25,7 @@ class CreateItemRentalsTable extends Migration
                 ->comment('0=Rental,1=Return,2=Overdue');
 
             $table->float('amount_of_penalty')->default(0);
+            $table->string('note',255)->nullable();
             $table->tinyInteger('penalty_status')->default(\App\Models\ItemRental::NOAMOUNT)
                 ->comment('0=NOAMOUNT,1=PAID,2=Due');
             $table->unsignedBigInteger('created_by', false);

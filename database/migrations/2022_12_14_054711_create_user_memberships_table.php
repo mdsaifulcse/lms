@@ -17,7 +17,7 @@ class CreateUserMembershipsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('membership_plan_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
-
+            $table->dateTime('valid_till')->comment('After this date plan will be considered expired');
             $table->tinyInteger('status')->comment('1=Active,0=Inactive , User wise At a time one status would be active');
 
             $table->unsignedBigInteger('created_by', false);

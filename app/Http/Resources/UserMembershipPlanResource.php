@@ -20,6 +20,7 @@ class UserMembershipPlanResource extends JsonResource
             'membership_plan_id'=>$this->membership_plan_id,
             'user_name'=>$this->user->name,
             'membership_plan'=>$this->membershipPlan->name,
+            'valid_till'=>$this->valid_till,
             'status'=>$this->status,
         ];
     }

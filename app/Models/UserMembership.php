@@ -15,7 +15,7 @@ class UserMembership extends Model
     const YES=1;
     const NO=0;
     protected $table='user_memberships';
-    protected $fillable=['user_id','membership_plan_id','status','created_by','updated_by'];
+    protected $fillable=['user_id','membership_plan_id','valid_till','status','created_by','updated_by'];
 
 
     public function user(){

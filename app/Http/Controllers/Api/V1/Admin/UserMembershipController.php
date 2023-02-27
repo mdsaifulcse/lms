@@ -7,7 +7,9 @@ use App\Http\Resources\UserMembershipPlanResource;
 use App\Http\Resources\UserMembershipPlanResourceCollection;
 use App\Http\Resources\UserResourceCollection;
 use App\Http\Traits\ApiResponseTrait;
+use App\Models\MembershipPlan;
 use App\Models\UserMembership;
+use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 use DB,Hash,Validator,Auth;
@@ -28,7 +30,7 @@ class UserMembershipController extends Controller
     public function index()
     {
         try{
-            $userMemberships=$this->model->with('user')->latest()->get();
+            $userMemberships=$this->model->with('user')->orderBy('user_id','DESC')->latest()->get();
             return $this->respondWithSuccess('All User Membership Plan list',UserMembershipPlanResourceCollection::make($userMemberships),Response::HTTP_OK);
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -62,6 +64,13 @@ class UserMembershipController extends Controller
         }
 
         try{
+            //Calculate Validity date ------
+            $planData=MembershipPlan::where(['id'=>$request->membership_plan_id,'status'=>MembershipPlan::ACTIVE])->first();
+            if (empty($planData)){
+                return $this->respondWithError('No plan data found',[],Response::HTTP_NOT_FOUND);
+            }
+
+            $validTill=$this->calculateValidityDate($planData);
 
             // Find user Active plan and make it Inactive if request status is Active---------
             if ($request->status==UserMembership::ACTIVE) {
@@ -74,14 +83,38 @@ class UserMembershipController extends Controller
             $userMembershipPlan=$this->model->create([
                 'user_id'=>$request->user_id,
                 'membership_plan_id'=>$request->membership_plan_id,
+                'valid_till'=>date('Y-m-d h:i',strtotime($validTill)),
                 'status'=>$request->status
             ]);
 
-            return $this->respondWithSuccess('Item has been created successful',new  UserMembershipPlanResource($userMembershipPlan),Response::HTTP_OK);
+            return $this->respondWithSuccess('User Plan has been created successful',new  UserMembershipPlanResource($userMembershipPlan),Response::HTTP_OK);
 
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function calculateValidityDate($planData,$userPlanId=null,$update=false){
+
+        if ($update && $userPlanId!=null){ //
+            $userPlan=UserMembership::find($userPlanId);
+
+            //$planData->valid_duration == number of month
+            if ($planData->valid_duration==0){ // Validity forever
+                $validTill=Carbon::createFromDate($userPlan->created_at)->addMonth(1200)->timezone('UTC');  // 1200 months==100 Years
+            }else{
+                $validTill=Carbon::createFromDate($userPlan->created_at)->addMonth($planData->valid_duration)->timezone('UTC');
+            }
+        }else{
+            if ($planData->valid_duration==0){ // Validity forever
+                $validTill=Carbon::now('UTC')->addMonth(1200);  // 1200 months==100 Years
+            }else{
+                $validTill=Carbon::now('UTC')->addMonth($planData->valid_duration);
+            }
+        }
+
+
+        return $validTill;
     }
 
     public function storeValidationRules($request){
@@ -139,16 +172,25 @@ class UserMembershipController extends Controller
         }
 
         try{
-
             // Find the user membership plan --------------------
             $userMembershipPlan=$this->model->with('user')->where(['id'=>$id])->first();
             if (empty($userMembershipPlan)){
-                return $this->respondWithError('No data found',[],Response::HTTP_NOT_FOUND);
+                return $this->respondWithError('No user plan data found',[],Response::HTTP_NOT_FOUND);
             }
+
+            //Calculate Validity date ------
+            $planData=MembershipPlan::where(['id'=>$request->membership_plan_id,'status'=>MembershipPlan::ACTIVE])->first();
+            if (empty($planData)){
+                return $this->respondWithError('No plan data found',[],Response::HTTP_NOT_FOUND);
+            }
+
+            $validTill=$this->calculateValidityDate($planData,$id,true);
+
 
             // Find user Active plan and make it Inactive if request status is Active---------
             if ($request->status==UserMembership::ACTIVE) {
-                $userWiseActivePlan = $this->model->where(['user_id' => $request->user_id, 'status' => UserMembership::ACTIVE])->first();
+                $userWiseActivePlan = $this->model->where(['user_id' => $request->user_id, 'status' => UserMembership::ACTIVE])
+                    ->where('id','!=',$id)->first();
                 if (!empty($userWiseActivePlan)) {
                     $userWiseActivePlan->update(['status' => UserMembership::INACTIVE]);
                 }
@@ -158,10 +200,11 @@ class UserMembershipController extends Controller
             $userMembershipPlan->update([
                 'user_id'=>$request->user_id,
                 'membership_plan_id'=>$request->membership_plan_id,
+                'valid_till'=>$validTill,
                 'status'=>$request->status,
             ]);
 
-            return $this->respondWithSuccess('Item has been created successful',new  UserMembershipPlanResource($userMembershipPlan),Response::HTTP_OK);
+            return $this->respondWithSuccess('User plan has been update successful',new  UserMembershipPlanResource($userMembershipPlan),Response::HTTP_OK);
 
         }catch(\Exception $e){
             return $this->respondWithError('Something went wrong, Try again later',$e->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR);
