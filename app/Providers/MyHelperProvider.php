@@ -15,10 +15,6 @@ class MyHelperProvider extends ServiceProvider
 
     // ---------------------- Date Time Start ---------------
 
-    // Numbers
-    public static $bn_numbers = ["১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯", "০"];
-    public static $en_numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-
     // Months
     public static $en_months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     public static $en_short_months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -36,9 +32,13 @@ class MyHelperProvider extends ServiceProvider
     public static $bn_times = array('এএম', 'পিএম');
     public static $bn_times1 = array('পূর্বাহ্ন', 'অপরাহ্ন');
 
+    // Numbers
+    public static $bn_numbers = ["১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯", "০"];
+    public static $en_numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
     // Method - English to Bengali Number
     public static function bn_number($number)
     {
+        str_replace('','','');
         return str_replace(self::$en_numbers, self::$bn_numbers, $number);
     }
 

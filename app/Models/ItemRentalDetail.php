@@ -20,4 +20,8 @@ class ItemRentalDetail extends Model
     protected $table='item_rental_details';
     protected $fillable=['item_rental_id','item_id','item_qty','return_date','status','item_amount_of_penalty',
         'penalty_status'];
+
+    public function rentalItem(){
+        return $this->belongsTo(Item::class,'item_id','id');
+    }
 }

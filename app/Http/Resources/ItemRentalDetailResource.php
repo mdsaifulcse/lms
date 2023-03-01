@@ -17,8 +17,9 @@ class ItemRentalDetailResource extends JsonResource
         return [
             'id'=>$this->id,
             'item_id'=>$this->item_id,
+            'item_title'=>$this->rentalItem?$this->rentalItem->title:'',
             'item_qty'=>$this->item_qty,
-            'return_date'=>$this->return_date,
+            'return_date'=>$this->return_date?date('Y-m-d h:i a',strtotime($this->return_date)):'',
             'status'=>$this->status,
             'item_amount_of_penalty'=>$this->item_amount_of_penalty,
             'penalty_status'=>$this->penalty_status,

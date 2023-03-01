@@ -13,6 +13,10 @@ class ItemInventoryStock extends Model
     protected $table='item_inventory_stocks';
     protected $fillable=['item_id','qty','created_by','updated_by'];
 
+    public function item(){
+        return $this->belongsTo(Item::class,'item_id','id');
+    }
+
     public static function boot(){
         parent::boot();
         static::creating(function($query){
